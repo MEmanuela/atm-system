@@ -4,11 +4,13 @@ import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.TransactionType;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
+import org.internship.jpaonlinebanking.exceptions.TransactionException;
 import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ public class TransactionService {
     }
 
     public List<Transaction> getTransactionsByAccount(Long accountId) {
-        return transactionRepository.findByBaseAccount_Id(accountId);
+        return transactionRepository.findByBaseAccount_AccountId(accountId);
     }
 
     public List<TransactionType> getTypes() {
@@ -48,7 +50,7 @@ public class TransactionService {
         List<List<Transaction>> transactions = new ArrayList<>();
         List<Account> userAccounts = accountRepository.findByUser_UserId(userId);
         for (Account account:userAccounts) {
-            transactions.add(transactionRepository.findByBaseAccount_Id(account.getId()));
+            transactions.add(transactionRepository.findByBaseAccount_AccountId(account.getAccountId()));
         }
         return transactions;
     }
@@ -57,7 +59,7 @@ public class TransactionService {
         return transactionTypeRepository.save(type);
     }
 
-    //todo negative balance after withdraw -> rollback
+    @Transactional
     public Transaction createBasicTransaction(Long typeId, Transaction transaction, Long accountId) {
         List<Transaction> transactions = new ArrayList<Transaction>();
         TransactionType type1 = new TransactionType();
@@ -82,6 +84,9 @@ public class TransactionService {
         if (type.getType().equals("withdraw")) {
             //withdraw
             transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() - amount);
+            if (transaction.getBaseAccount().getBalance() < 0.0) {
+                throw new TransactionException("Not enough money to withdraw");
+            }
         } else if (type.getType().equals("deposit")){
             //deposit
             transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() + amount);
@@ -98,7 +103,7 @@ public class TransactionService {
 
         return transaction1;
     }
-    //todo @Transactional
+    @Transactional
     public Transaction createTransferTransaction(Long typeId, Transaction transaction,
                                                  Long baseAccountId, Long receivingAccountId) {
         List<Transaction> transactions = new ArrayList<Transaction>();
@@ -130,7 +135,9 @@ public class TransactionService {
         transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() - amount);
         //deposit to receiving account
         transaction.getReceivingAccount().setBalance(transaction.getReceivingAccount().getBalance() + amount);
-
+//        if (transaction.getBaseAccount().getAccountId() == Long.valueOf(1)){
+//            throw new RuntimeException("Something happened here");
+//        }
         Transaction transaction1 = transactionRepository.save(transaction);
 
         // tie Transaction to TransactionType

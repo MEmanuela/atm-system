@@ -25,7 +25,7 @@ public class Account {
     @Column(name = "ID", nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long accountId;
     @Column(name = "Name")
     private String name;
     @Column(name = "DateOpened")
@@ -44,9 +44,6 @@ public class Account {
     private List<Transaction> baseAccountTransactions = new ArrayList<Transaction>();
     @OneToMany(mappedBy = "receivingAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> receivingAccountTransactions = new ArrayList<Transaction>();
-    public AccountType getAccountType() {
-        return accountType;
-    }
     public User getUser() {
         return user;
     }
@@ -57,12 +54,5 @@ public class Account {
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;
-    }
-    // getter method to retrieve the user's name
-    public String getUserName() {
-        return user.getName();
-    }
-    public String getAccountTypeName() {
-        return accountType.getType();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -42,6 +43,7 @@ public class UserService {
                 + name.substring(0, 2);
         return password;
     }
+    @Transactional
     public User createUser(Long roleId, User user) {
         List<User> users = new ArrayList<User>();
         Role role1 = new Role();
@@ -63,10 +65,11 @@ public class UserService {
 
         // tie User to Role
         users.add(user1);
-//        role1.setUsers(users);
+        role1.setUsers(users);
 
         return user1;
     }
+    @Transactional
     public void updateUserPassword(Long userId, String password) {
         User user = userRepository.findById(userId).get();
         user.setPassword(passwordEncoder.encode(password));
@@ -78,12 +81,4 @@ public class UserService {
     public List<User> getUsersByRole(Long roleId) {
         return userRepository.findByRole_RoleId(roleId);
     }
-//    public boolean isUserPasswordValid(String username, String password) {
-//        User user = userRepository.findByUsername(username).get();
-//        return (user.getPassword().equals(password));
-//    }
-//    private GrantedAuthority getAuthorities(String role) {
-//        GrantedAuthority authority = new SimpleGrantedAuthority(role);
-//        return authority;
-//    }
 }

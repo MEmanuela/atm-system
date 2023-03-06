@@ -26,7 +26,7 @@ public class AccountServiceTest {
                 .personalCodeNumber("9625418852367").role(new Role(Long.valueOf(2), "customer"))
                 .accounts(new ArrayList<>()).build();
         Account account = accountService.createAccount(Long.valueOf(1),
-                Account.builder().id(Long.valueOf(2))
+                Account.builder().accountId(Long.valueOf(2))
                 .name("John Doe").dateOpened(new Date(2015-10-10))
                 .accountType(new AccountType()).user(user)
                 .baseAccountTransactions(new ArrayList<>())

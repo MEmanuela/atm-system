@@ -13,12 +13,10 @@ import java.util.List;
 public class RoleService {
     @Autowired
     RoleRepository roleRepository;
-
     public List<Role> getRoles() {
         return roleRepository.findAll();
     }
     public Role createRole(Role role) {
         return roleRepository.save(role);
     }
-    // get users by role
 }

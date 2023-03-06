@@ -20,9 +20,8 @@ public class Role {
     private Long roleId;
     @Column(name = "Type")
     private String type;
-//    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<User> users = new ArrayList<User>();
-
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> users = new ArrayList<User>();
     public Role(Long roleId, String type) {
         this.roleId = roleId;
         this.type = type;

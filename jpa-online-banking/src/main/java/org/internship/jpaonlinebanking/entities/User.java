@@ -45,10 +45,8 @@ public class User implements UserDetails {
     @JoinColumn(name = "roleId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Role role;
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts = new ArrayList<Account>();
-//    @OneToMany(mappedBy = "user")
-//    private List<Token> tokens = new ArrayList<Token>();
     @JsonIgnore
     public Role getRole() {
         return role;
