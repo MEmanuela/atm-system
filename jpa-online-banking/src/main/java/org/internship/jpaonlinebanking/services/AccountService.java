@@ -22,16 +22,6 @@ public class AccountService {
     @Autowired
     UserRepository userRepository;
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
-
-    public Optional<Account> getAccountById(Long accountId) {
-        if (!accountRepository.existsById(accountId)) {
-            throw new ResourceNotFoundException("Account with id " + accountId + " not found");
-        }
-        return accountRepository.findById(accountId);
-    }
     @Transactional
     public Account createAccount(Long typeId, Account account, Long userId) {
         List<Account> accounts = new ArrayList<Account>();
@@ -66,23 +56,11 @@ public class AccountService {
         return account1;
     }
 
-    public List<Account> getAccountsByType(Long typeId) {
-        return accountRepository.findByAccountType_Id(typeId);
-    }
-
     public List<Account> getAccountsByUser(Long userId) {
         return accountRepository.findByUser_UserId(userId);
     }
 
     public void deleteAccountById(Long accountId) {
         accountRepository.deleteById(accountId);
-    }
-
-    public List<AccountType> getTypes() {
-        return accountTypeRepository.findAll();
-    }
-
-    public AccountType createAccountType(AccountType type) {
-        return accountTypeRepository.save(type);
     }
 }

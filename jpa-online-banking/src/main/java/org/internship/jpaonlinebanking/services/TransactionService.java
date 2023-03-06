@@ -55,10 +55,6 @@ public class TransactionService {
         return transactions;
     }
 
-    public TransactionType createTransactionType(TransactionType type) {
-        return transactionTypeRepository.save(type);
-    }
-
     @Transactional
     public Transaction createBasicTransaction(Long typeId, Transaction transaction, Long accountId) {
         List<Transaction> transactions = new ArrayList<Transaction>();
