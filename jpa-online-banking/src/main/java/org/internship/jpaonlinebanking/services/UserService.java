@@ -34,6 +34,11 @@ public class UserService {
         return userRepository.findById(userId);
     }
     public String generateDefaultUsername(String name) {
+        int cnt = 0;
+        if (userRepository.findByName(name).size() > 0) {
+            cnt = userRepository.findByName(name).size();
+            return name.toLowerCase().replace(" ", "_").concat(String.valueOf(cnt));
+        }
         return name.toLowerCase().replace(" ", "_");
     }
     public String generateDefaultPassword(String n, String pcn) {

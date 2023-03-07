@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private String email;
     @Column(name = "PersonalCodeNumber", updatable = false)
     private String personalCodeNumber;
-    @Column(name = "Username", updatable = false)
+    @Column(name = "Username", updatable = false, unique = true)
     private String username;
     @Column(name = "Password")
     private String password;
