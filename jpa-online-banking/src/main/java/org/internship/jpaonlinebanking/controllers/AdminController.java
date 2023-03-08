@@ -35,8 +35,8 @@ public class AdminController {
                                  @PathVariable(value = "userId") Long userId) {
         return accountService.createAccount(typeId, account, userId);
     }
-    @DeleteMapping("/account/{accountId}")
-    public void deleteAccount(@PathVariable(value = "accountId") Long accountId) {
-        accountService.deleteAccountById(accountId);
+    @DeleteMapping("/account/{accountName}")
+    public void deleteAccount(@PathVariable(value = "accountName") String name) {
+        accountService.deleteAccountByName(name);
     }
 }

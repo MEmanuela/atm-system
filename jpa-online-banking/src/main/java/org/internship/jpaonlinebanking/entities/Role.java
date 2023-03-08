@@ -1,6 +1,8 @@
 package org.internship.jpaonlinebanking.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
@@ -13,6 +15,8 @@ import java.util.List;
 @Data
 @Jacksonized
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role {
     @Column(name = "ID", nullable = false, length = 5)
     @Id

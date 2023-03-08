@@ -7,7 +7,6 @@ import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,22 +47,22 @@ public class CustomerController {
         return transactionService.getTransactionsByUser(userId);
     }
     @PostMapping("/{userId}/{typeId}/{accountId}/withdraw")
-    public Transaction withdrawTransaction(@PathVariable(value = "userId") Long userId,
-                                              @PathVariable(value = "typeId") Long typeId,
-                                              @PathVariable(value = "accountId") Long accountId,
-                                              @RequestBody Transaction transaction,
-                                              @AuthenticationPrincipal User user) {
+    public Transaction createWithdrawTransaction(@PathVariable(value = "userId") Long userId,
+                                                 @PathVariable(value = "typeId") Long typeId,
+                                                 @PathVariable(value = "accountId") Long accountId,
+                                                 @RequestBody Transaction transaction,
+                                                 @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new RuntimeException("Don't have access");
         }
         return transactionService.createBasicTransaction(typeId, transaction, accountId);
     }
     @PostMapping("/{userId}/{typeId}/{accountId}/deposit")
-    public Transaction depositTransaction(@PathVariable(value = "userId") Long userId,
-                                              @PathVariable(value = "typeId") Long typeId,
-                                              @PathVariable(value = "accountId") Long accountId,
-                                              @RequestBody Transaction transaction,
-                                              @AuthenticationPrincipal User user) {
+    public Transaction createDepositTransaction(@PathVariable(value = "userId") Long userId,
+                                                @PathVariable(value = "typeId") Long typeId,
+                                                @PathVariable(value = "accountId") Long accountId,
+                                                @RequestBody Transaction transaction,
+                                                @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new RuntimeException("Don't have access");
         }

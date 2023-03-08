@@ -25,6 +25,12 @@ public class TransactionService {
     @Autowired
     AccountRepository accountRepository;
 
+    public TransactionService(TransactionTypeRepository transactionTypeRepository, TransactionRepository transactionRepository, AccountRepository accountRepository) {
+        this.transactionTypeRepository = transactionTypeRepository;
+        this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+    }
+
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }

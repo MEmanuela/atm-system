@@ -1,5 +1,6 @@
 package org.internship.jpaonlinebanking.services;
 
+import lombok.AllArgsConstructor;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.AccountType;
 import org.internship.jpaonlinebanking.entities.User;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class AccountService {
     @Autowired
     AccountRepository accountRepository;
@@ -43,6 +45,7 @@ public class AccountService {
         // tie User to Account
         account.setUser(user);
         account.setBalance(0.0);
+        account.setName(account.getName().replace(" ", ""));
 
         Account account1 = accountRepository.save(account);
 
@@ -62,5 +65,9 @@ public class AccountService {
 
     public void deleteAccountById(Long accountId) {
         accountRepository.deleteById(accountId);
+    }
+    @Transactional
+    public void deleteAccountByName(String name) {
+        accountRepository.deleteByName(name);
     }
 }

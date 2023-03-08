@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 @Jacksonized
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AccountType {
     @Column(name = "ID", nullable = false)
     @Id
@@ -21,4 +23,9 @@ public class AccountType {
     private String type;
     @OneToMany(mappedBy = "accountId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts = new ArrayList<Account>();
+
+    public AccountType(long id, String type) {
+        this.id = id;
+        this.type = type;
+    }
 }

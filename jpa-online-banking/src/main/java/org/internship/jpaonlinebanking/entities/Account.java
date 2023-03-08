@@ -26,7 +26,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-    @Column(name = "Name")
+    @Column(name = "Name", unique = true)
     private String name;
     @Column(name = "DateOpened")
     private Date dateOpened;

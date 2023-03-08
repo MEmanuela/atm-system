@@ -47,6 +47,7 @@ public class User implements UserDetails {
     private Role role;
     @OneToMany(mappedBy = "accountId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts = new ArrayList<Account>();
+
     @JsonIgnore
     public Role getRole() {
         return role;

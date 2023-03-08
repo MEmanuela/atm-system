@@ -1,6 +1,8 @@
 package org.internship.jpaonlinebanking.services;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
@@ -16,14 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserService {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
     RoleRepository roleRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -43,9 +56,9 @@ public class UserService {
     }
     public String generateDefaultPassword(String n, String pcn) {
         String name = n.toLowerCase().replace(" ", "");
-        String password = name.substring(name.length() -3, name.length()-1)
-                + pcn.substring(pcn.length()/2, pcn.length()/2 + 2)
-                + name.substring(0, 2);
+        String password = name.substring(name.length() -3, name.length())
+                + pcn.substring(pcn.length()/2-1, pcn.length()/2 + 2)
+                + name.substring(0, 3);
         return password;
     }
     @Transactional
@@ -55,7 +68,7 @@ public class UserService {
 
         Optional<Role> byId = roleRepository.findById(roleId);
         if (!byId.isPresent()) {
-            throw new ResourceNotFoundException("Role with id " + roleId + "does not exist");
+            throw new ResourceNotFoundException("Role with id " + roleId + " does not exist");
         }
         Role role = byId.get();
 

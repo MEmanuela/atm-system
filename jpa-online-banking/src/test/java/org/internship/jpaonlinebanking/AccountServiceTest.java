@@ -4,34 +4,99 @@ import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.AccountType;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
+import org.internship.jpaonlinebanking.repositories.AccountRepository;
+import org.internship.jpaonlinebanking.repositories.AccountTypeRepository;
+import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.internship.jpaonlinebanking.services.AccountService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
-    @Autowired
-    private AccountService accountService;
+    @Mock
+    private AccountRepository accountRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private AccountTypeRepository accountTypeRepository;
+    private AccountService underTest;
+    @BeforeEach
+    void setUp() {
+        underTest = new AccountService(accountRepository, accountTypeRepository, userRepository);
+    }
+    @Test
+    void canCreateAccount() {
+        //given
+        User user = new User();
+        user.setName("John Doe");
+
+        Account account = new Account();
+        account.setName("John Doe");
+        account.setDateOpened(new Date(2019-12-12));
+        //when
+        when(accountTypeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(new AccountType(1l, "basic")));
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        underTest.createAccount(1l, account, 1l);
+        //then
+        ArgumentCaptor<Account> accountArgumentCaptor =
+                ArgumentCaptor.forClass(Account.class);
+        verify(accountRepository).save(accountArgumentCaptor.capture());
+        Account capturedAccount = accountArgumentCaptor.getValue();
+        assertThat(capturedAccount).isEqualTo(account);
+    }
     @Test
     void createdAccountHasInitialBalanceZero() {
-        User user = User.builder()
-                .userId(Long.valueOf(3)).name("John Doe")
-                .phone("0856623956").email("john.doe@gmail.com")
-                .personalCodeNumber("9625418852367").role(new Role(Long.valueOf(2), "customer"))
-                .accounts(new ArrayList<>()).build();
-        Account account = accountService.createAccount(Long.valueOf(1),
-                Account.builder().accountId(Long.valueOf(2))
-                .name("John Doe").dateOpened(new Date(2015-10-10))
-                .accountType(new AccountType()).user(user)
-                .baseAccountTransactions(new ArrayList<>())
-                .receivingAccountTransactions(new ArrayList<>())
-                 .build(), user.getUserId());
-        assertThat(account.getBalance().equals(0.0));
+        //given
+        User user = new User();
+        user.setName("John Doe");
+
+        Account account = new Account();
+        account.setName("John Doe");
+        account.setDateOpened(new Date(2019-12-12));
+        //when
+        when(accountTypeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(new AccountType(1l, "basic")));
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        when(accountRepository.findById(anyLong()))
+                .thenReturn(Optional.of(account));
+        underTest.createAccount(1l, account, 1l);
+        //then
+        assertThat(accountRepository.findById(anyLong()).get()
+                .getBalance().equals(0.0));
+    }
+    @Test
+    void canGetAccountsByUser() {
+        //given
+        Account account = new Account();
+        account.setName("John Doe");
+        account.setDateOpened(new Date(2019-12-12));
+        //when
+        when(accountRepository.findByUser_UserId(anyLong()))
+                .thenReturn(List.of(account));
+        var actual = underTest.getAccountsByUser(1l);
+        //then
+        assertThat(actual).usingRecursiveComparison().isEqualTo(List.of(account));
+        verify(accountRepository).findByUser_UserId(anyLong());
+    }
+    @Test
+    void canDeleteAccountByName() {
+        doNothing().when(accountRepository).deleteByName(anyString());
+
+        underTest.deleteAccountByName(anyString());
+        verify(accountRepository).deleteByName(anyString());
     }
 }

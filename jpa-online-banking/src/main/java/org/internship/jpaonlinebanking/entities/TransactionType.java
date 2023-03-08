@@ -25,4 +25,9 @@ public class TransactionType {
     private String type;
     @OneToMany(mappedBy = "transactionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<Transaction>();
+
+    public TransactionType(long id, String type) {
+        this.id = id;
+        this.type = type;
+    }
 }
