@@ -100,8 +100,8 @@ public class TransactionService {
         // tie Transaction to Account
         transactions.add(transaction1);
 
-        type1.setTransactions(transactions);
-        account1.setBaseAccountTransactions(transactions);
+        //type1.setTransactions(transactions);
+        //account1.setBaseAccountTransactions(transactions);
 
         return transaction1;
     }
@@ -146,9 +146,9 @@ public class TransactionService {
         // tie Transaction to Account
         transactions.add(transaction1);
 
-        type1.setTransactions(transactions);
-        account1.setBaseAccountTransactions(transactions);
-        account1.setReceivingAccountTransactions(transactions);
+        //type1.setTransactions(transactions);
+        //account1.setBaseAccountTransactions(transactions);
+        //account1.setReceivingAccountTransactions(transactions);
 
         return transaction1;
     }

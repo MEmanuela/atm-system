@@ -40,10 +40,10 @@ public class Account {
     @JoinColumn(name = "userId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-    @OneToMany(mappedBy = "baseAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> baseAccountTransactions = new ArrayList<Transaction>();
-    @OneToMany(mappedBy = "receivingAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> receivingAccountTransactions = new ArrayList<Transaction>();
+//    @OneToMany(mappedBy = "baseAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Transaction> baseAccountTransactions = new ArrayList<Transaction>();
+//    @OneToMany(mappedBy = "receivingAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Transaction> receivingAccountTransactions = new ArrayList<Transaction>();
     public User getUser() {
         return user;
     }

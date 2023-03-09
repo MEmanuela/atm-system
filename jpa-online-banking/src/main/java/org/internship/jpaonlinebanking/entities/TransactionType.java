@@ -23,8 +23,8 @@ public class TransactionType {
     private Long id;
     @Column(name = "Type")
     private String type;
-    @OneToMany(mappedBy = "transactionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> transactions = new ArrayList<Transaction>();
+//    @OneToMany(mappedBy = "transactionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Transaction> transactions = new ArrayList<Transaction>();
 
     public TransactionType(long id, String type) {
         this.id = id;

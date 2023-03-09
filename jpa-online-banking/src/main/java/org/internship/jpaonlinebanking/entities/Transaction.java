@@ -33,7 +33,7 @@ public class Transaction {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Account baseAccount;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receivingAccountId", nullable = false)
+    @JoinColumn(name = "receivingAccountId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Account receivingAccount;
     @ManyToOne(fetch = FetchType.LAZY)

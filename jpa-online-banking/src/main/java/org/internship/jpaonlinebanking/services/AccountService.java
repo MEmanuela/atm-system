@@ -62,7 +62,15 @@ public class AccountService {
     public List<Account> getAccountsByUser(Long userId) {
         return accountRepository.findByUser_UserId(userId);
     }
-
+    public Optional<Account> getAccountById(Long accountId) {
+        if (!accountRepository.existsById(accountId)) {
+            throw new ResourceNotFoundException("Account with id " + accountId + " not found");
+        }
+        return accountRepository.findById(accountId);
+    }
+    public Optional<Account> getAccountByName(String name) {
+        return accountRepository.findByName(name);
+    }
     public void deleteAccountById(Long accountId) {
         accountRepository.deleteById(accountId);
     }

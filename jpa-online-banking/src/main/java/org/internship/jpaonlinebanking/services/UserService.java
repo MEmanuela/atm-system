@@ -83,7 +83,7 @@ public class UserService {
 
         // tie User to Role
         users.add(user1);
-        role1.setUsers(users);
+        //role1.setUsers(users);
 
         return user1;
     }
