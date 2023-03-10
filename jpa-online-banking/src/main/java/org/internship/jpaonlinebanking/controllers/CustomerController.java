@@ -3,6 +3,7 @@ package org.internship.jpaonlinebanking.controllers;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.User;
+import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
@@ -26,7 +27,7 @@ public class CustomerController {
     public Optional<User> getUserById(@PathVariable(value = "userId") Long userId,
                                       @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to see user's details");
         }
         return userService.getUserById(userId);
     }
@@ -34,7 +35,7 @@ public class CustomerController {
     public List<Account> getAccountsByUser(@PathVariable(value = "userId") Long userId,
                                            @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to see user's accounts");
         }
         return accountService.getAccountsByUser(userId);
     }
@@ -42,7 +43,7 @@ public class CustomerController {
     public List<List<Transaction>> getTransactionsByUser(@PathVariable(value = "userId") Long userId,
                                                          @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to see user's transaction history");
         }
         return transactionService.getTransactionsByUser(userId);
     }
@@ -53,7 +54,7 @@ public class CustomerController {
                                                  @RequestBody Transaction transaction,
                                                  @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to perform this transaction");
         }
         return transactionService.createBasicTransaction(typeId, transaction, accountId);
     }
@@ -64,7 +65,7 @@ public class CustomerController {
                                                 @RequestBody Transaction transaction,
                                                 @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to perform this transaction");
         }
         return transactionService.createBasicTransaction(typeId, transaction, accountId);
     }
@@ -76,7 +77,7 @@ public class CustomerController {
                                                  @RequestBody Transaction transaction,
                                                  @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to perform this transaction");
         }
         return transactionService.createTransferTransaction(typeId, transaction, baseAccId, recAccId);
     }
@@ -85,7 +86,7 @@ public class CustomerController {
                                @RequestBody String password,
                                @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
-            throw new RuntimeException("Don't have access");
+            throw new AuthorizationException("You are not authorized to change user's password");
         }
         userService.updateUserPassword(userId, password);
     }

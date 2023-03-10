@@ -140,6 +140,9 @@ public class TransactionService {
 //        if (transaction.getBaseAccount().getAccountId() == Long.valueOf(1)){
 //            throw new RuntimeException("Something happened here");
 //        }
+        if (transaction.getBaseAccount().getBalance() < 0.0) {
+            throw new TransactionException("Not enough money to transfer");
+        }
         Transaction transaction1 = transactionRepository.save(transaction);
 
         // tie Transaction to TransactionType
