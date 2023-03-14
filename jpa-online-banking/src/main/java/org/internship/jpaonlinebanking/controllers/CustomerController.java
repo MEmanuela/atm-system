@@ -1,9 +1,12 @@
 package org.internship.jpaonlinebanking.controllers;
 
+import jakarta.validation.Valid;
+import org.internship.jpaonlinebanking.config.JwtService;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
+import org.internship.jpaonlinebanking.exceptions.UserAuthenticationException;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
@@ -51,7 +54,7 @@ public class CustomerController {
     public Transaction createWithdrawTransaction(@PathVariable(value = "userId") Long userId,
                                                  @PathVariable(value = "typeId") Long typeId,
                                                  @PathVariable(value = "accountId") Long accountId,
-                                                 @RequestBody Transaction transaction,
+                                                 @Valid @RequestBody Transaction transaction,
                                                  @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new AuthorizationException("You are not authorized to perform this transaction");
@@ -62,7 +65,7 @@ public class CustomerController {
     public Transaction createDepositTransaction(@PathVariable(value = "userId") Long userId,
                                                 @PathVariable(value = "typeId") Long typeId,
                                                 @PathVariable(value = "accountId") Long accountId,
-                                                @RequestBody Transaction transaction,
+                                                @Valid @RequestBody Transaction transaction,
                                                 @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new AuthorizationException("You are not authorized to perform this transaction");
@@ -74,7 +77,7 @@ public class CustomerController {
                                                  @PathVariable(value = "typeId") Long typeId,
                                                  @PathVariable(value = "baseAccId") Long baseAccId,
                                                  @PathVariable(value = "recAccId") Long recAccId,
-                                                 @RequestBody Transaction transaction,
+                                                 @Valid @RequestBody Transaction transaction,
                                                  @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new AuthorizationException("You are not authorized to perform this transaction");

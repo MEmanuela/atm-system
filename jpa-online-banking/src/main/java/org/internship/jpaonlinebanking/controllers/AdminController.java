@@ -1,10 +1,14 @@
 package org.internship.jpaonlinebanking.controllers;
 
+import jakarta.validation.Valid;
 import org.internship.jpaonlinebanking.entities.Account;
+import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
+import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +26,7 @@ public class AdminController {
     }
     @PostMapping("/{roleId}/user")
     public User createUser(@PathVariable(value = "roleId") Long roleId,
-                           @RequestBody User user) {
+                           @Valid @RequestBody User user) {
         return userService.createUser(roleId, user);
     }
     @DeleteMapping("/user/{userId}")
@@ -31,7 +35,7 @@ public class AdminController {
     }
     @PostMapping("/{userId}/{typeId}/account")
     public Account createAccount(@PathVariable(value = "typeId") Long typeId,
-                                 @RequestBody Account account,
+                                 @Valid @RequestBody Account account,
                                  @PathVariable(value = "userId") Long userId) {
         return accountService.createAccount(typeId, account, userId);
     }

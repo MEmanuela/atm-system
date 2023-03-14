@@ -2,6 +2,8 @@ package org.internship.jpaonlinebanking.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +29,7 @@ public class Transaction {
     @Column(name = "date")
     private Date date;
     @Column(name = "amount")
+    @NotNull
     private Double amount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "baseAccountId", nullable = false)

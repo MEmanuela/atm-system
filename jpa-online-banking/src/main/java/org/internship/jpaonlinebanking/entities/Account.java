@@ -2,6 +2,9 @@ package org.internship.jpaonlinebanking.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +30,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     @Column(name = "Name", unique = true)
+    @NotBlank(message = "Name is required")
+    @NotNull(message = "Name cannot be null")
     private String name;
     @Column(name = "DateOpened")
     private Date dateOpened;

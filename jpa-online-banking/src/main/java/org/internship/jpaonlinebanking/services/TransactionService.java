@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +84,7 @@ public class TransactionService {
         //tie Account to Transaction
         transaction.setBaseAccount(account);
         transaction.setReceivingAccount(null);
+        transaction.setDate(new Date());
         Double amount = transaction.getAmount();
         if (type.getType().equals("withdraw")) {
             //withdraw
@@ -132,14 +135,14 @@ public class TransactionService {
         transaction.setBaseAccount(baseAccount);
         transaction.setReceivingAccount(receivingAccount);
 
+        transaction.setDate(new Date());
+
         Double amount = transaction.getAmount();
         //withdraw from base account
         transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() - amount);
         //deposit to receiving account
         transaction.getReceivingAccount().setBalance(transaction.getReceivingAccount().getBalance() + amount);
-//        if (transaction.getBaseAccount().getAccountId() == Long.valueOf(1)){
-//            throw new RuntimeException("Something happened here");
-//        }
+
         if (transaction.getBaseAccount().getBalance() < 0.0) {
             throw new TransactionException("Not enough money to transfer");
         }

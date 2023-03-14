@@ -46,6 +46,7 @@ public class AccountService {
         account.setUser(user);
         account.setBalance(0.0);
         account.setName(account.getName().replace(" ", ""));
+        account.setDateOpened(new Date());
 
         Account account1 = accountRepository.save(account);
 
@@ -54,7 +55,7 @@ public class AccountService {
         accounts.add(account1);
 
 //        type1.setAccounts(accounts);
-        user1.setAccounts(accounts);
+//        user1.setAccounts(accounts);
 
         return account1;
     }

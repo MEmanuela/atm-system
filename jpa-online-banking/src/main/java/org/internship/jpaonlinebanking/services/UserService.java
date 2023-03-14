@@ -56,10 +56,9 @@ public class UserService {
     }
     public String generateDefaultPassword(String n, String pcn) {
         String name = n.toLowerCase().replace(" ", "");
-        String password = name.substring(name.length() -3, name.length())
+        return name.substring(name.length() -3, name.length())
                 + pcn.substring(pcn.length()/2-1, pcn.length()/2 + 2)
                 + name.substring(0, 3);
-        return password;
     }
     @Transactional
     public User createUser(Long roleId, User user) {

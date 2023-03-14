@@ -5,6 +5,8 @@ import org.internship.jpaonlinebanking.config.JwtService;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.Token;
 import org.internship.jpaonlinebanking.entities.User;
+import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
+import org.internship.jpaonlinebanking.exceptions.UserAuthenticationException;
 import org.internship.jpaonlinebanking.repositories.TokenRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,21 +38,23 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken).build();
     }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()));
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
+        var user = userRepository.findByUsername(request.getUsername()).get();
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        return AuthenticationResponse.builder()
+        var response = AuthenticationResponse.builder()
                 .token(jwtToken).build();
+        if (response.getToken() != null) {
+            return response;
+        } else {
+            throw new UserAuthenticationException("Something went wrong.Failed to authenticate!");
+        }
     }
-
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
@@ -71,5 +75,4 @@ public class AuthenticationService {
         });
         tokenRepository.saveAll(validUserToken);
     }
-
 }

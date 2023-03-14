@@ -1,6 +1,7 @@
 package org.internship.jpaonlinebanking.config;
 
 import lombok.RequiredArgsConstructor;
+import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
     @Bean
     public AuthenticationProvider authenticationProvider() {
