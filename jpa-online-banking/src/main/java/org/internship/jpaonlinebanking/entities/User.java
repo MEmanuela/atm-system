@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +12,10 @@ import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.internship.jpaonlinebanking.annotations.UserPersonalCodeNrConstraint;
-import org.internship.jpaonlinebanking.annotations.UserPhoneConstraint;
+import org.internship.jpaonlinebanking.annotations.ValidEmail;
+import org.internship.jpaonlinebanking.annotations.ValidPassword;
+import org.internship.jpaonlinebanking.annotations.ValidPersonalCodeNr;
+import org.internship.jpaonlinebanking.annotations.ValidPhoneNr;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "User")
+@Table(name = "User_")
 @Data
 @Jacksonized
 @NoArgsConstructor
@@ -39,18 +40,19 @@ public class User implements UserDetails {
     @NotNull(message = "Name can not be null")
     private String name;
     @Column(name = "Phone", updatable = false)
-    @UserPhoneConstraint
+    @ValidPhoneNr
     private String phone;
     @Column(name = "Email", updatable = false)
-    @Email(message = "Must be a well-formed email address")
+    @ValidEmail
     private String email;
     @Column(name = "PersonalCodeNumber", updatable = false)
     @NotBlank(message = "Personal Code Number can not be null")
-    @UserPersonalCodeNrConstraint
+    @ValidPersonalCodeNr
     private String personalCodeNumber;
     @Column(name = "Username", updatable = false, unique = true)
     private String username;
     @Column(name = "Password")
+    @ValidPassword
     private String password;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId", nullable = false)

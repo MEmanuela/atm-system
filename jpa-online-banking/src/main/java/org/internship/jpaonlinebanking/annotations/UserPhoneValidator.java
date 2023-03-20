@@ -3,7 +3,7 @@ package org.internship.jpaonlinebanking.annotations;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class UserPhoneValidator implements ConstraintValidator<UserPhoneConstraint, String> {
+public class UserPhoneValidator implements ConstraintValidator<ValidPhoneNr, String> {
 
     @Override
     public boolean isValid(String phoneField, ConstraintValidatorContext context) {

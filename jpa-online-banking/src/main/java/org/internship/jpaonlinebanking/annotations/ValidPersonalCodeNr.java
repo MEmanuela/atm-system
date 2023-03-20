@@ -8,9 +8,9 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = UserPhoneValidator.class)
-public @interface UserPhoneConstraint {
-    String message() default "Invalid phone number";
+@Constraint(validatedBy = UserPersonalCodeNrValidator.class)
+public @interface ValidPersonalCodeNr {
+    String message() default "Invalid personal code number";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

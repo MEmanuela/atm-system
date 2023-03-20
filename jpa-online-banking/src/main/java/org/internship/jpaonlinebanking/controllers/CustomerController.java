@@ -7,6 +7,7 @@ import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
 import org.internship.jpaonlinebanking.exceptions.UserAuthenticationException;
+import org.internship.jpaonlinebanking.security.PasswordUpdateRequest;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
@@ -86,11 +87,11 @@ public class CustomerController {
     }
     @PutMapping("/{userId}/password")
     public void updatePassword(@PathVariable(value = "userId") Long userId,
-                               @RequestBody String password,
+                               @Valid @RequestBody PasswordUpdateRequest request,
                                @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new AuthorizationException("You are not authorized to change user's password");
         }
-        userService.updateUserPassword(userId, password);
+        userService.updateUserPassword(userId, request.getPassword());
     }
 }

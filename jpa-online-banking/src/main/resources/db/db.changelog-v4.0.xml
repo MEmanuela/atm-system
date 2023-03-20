@@ -1,0 +1,133 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+                    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="4" author="ema">
+        <insert tableName="role">
+            <column name="id" value="1"/>
+            <column name="type" value="admin"/>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="2"/>
+            <column name="type" value="customer"/>
+        </insert>
+
+        <insert tableName="account_type">
+            <column name="id" value="1"/>
+            <column name="type" value="basic"/>
+        </insert>
+        <insert tableName="account_type">
+            <column name="id" value="2"/>
+            <column name="type" value="saving"/>
+        </insert>
+        <insert tableName="account_type">
+            <column name="id" value="3"/>
+            <column name="type" value="fixed deposit"/>
+        </insert>
+
+        <insert tableName="transaction_type">
+            <column name="id" value="1"/>
+            <column name="type" value="withdraw"/>
+        </insert>
+        <insert tableName="transaction_type">
+            <column name="id" value="2"/>
+            <column name="type" value="deposit"/>
+        </insert>
+        <insert tableName="transaction_type">
+            <column name="id" value="3"/>
+            <column name="type" value="transfer"/>
+        </insert>
+
+        <insert tableName="user_">
+            <column name="id" value="1"/>
+            <column name="name" value="Paul Hewson"/>
+            <column name="phone" value="0859986521"/>
+            <column name="email" value="paul.hewson@gmail.com"/>
+            <column name="personal_code_number" value="8965223841087"/>
+            <column name="username" value="paul_hewson"/>
+            <column name="password" value="$2a$10$CDzNYTgimt7von8IRlsU2eWIfnxt/IuoNksu/qZih.mTU4HOZggzS"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="user_">
+            <column name="id" value="2"/>
+            <column name="name" value="Adam Clayton"/>
+            <column name="phone" value="0858856237"/>
+            <column name="email" value="adam.clayton@gmail.com"/>
+            <column name="personal_code_number" value="9085447123690"/>
+            <column name="username" value="adam_clayton"/>
+            <column name="password" value="$2a$10$/PacO64PwJeBK82LdeZxoO3QbysaV7SLWQD4TJk7bp0yJSR2BJWc2"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="user_">
+            <column name="id" value="3"/>
+            <column name="name" value="Alex Smith"/>
+            <column name="phone" value="0956695231"/>
+            <column name="email" value="alex.smith@gmail.com"/>
+            <column name="personal_code_number" value="9539486851785"/>
+            <column name="username" value="alex_smith"/>
+            <column name="password" value="$2a$10$wnVs14z7Qc8JHvdrsxYihukN5C0mUiUp4dcwR6o.Iche50Tc9Q5dm"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="user_">
+            <column name="id" value="4"/>
+            <column name="name" value="Criss Evans"/>
+            <column name="phone" value="0858856237"/>
+            <column name="email" value="criss.evans@gmail.com"/>
+            <column name="personal_code_number" value="9539496851785"/>
+            <column name="username" value="criss_evans"/>
+            <column name="password" value="$2a$10$Z7s6/lojv/u/tqJ15qU8duw9gKKAhrN9WA24X48CPbV/AteMxx/EK"/>
+            <column name="role_id" value="1"/>
+        </insert>
+
+        <insert tableName="account">
+            <column name="id" value="1"/>
+            <column name="name" value="PaulHewson"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="1"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="account">
+            <column name="id" value="2"/>
+            <column name="name" value="PaulHewson1"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="2"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="account">
+            <column name="id" value="3"/>
+            <column name="name" value="AdamClayton"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="1"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="account">
+            <column name="id" value="4"/>
+            <column name="name" value="AdamClayton1"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="2"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="account">
+            <column name="id" value="5"/>
+            <column name="name" value="AlexSmith"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="1"/>
+            <column name="user_id" value="3"/>
+        </insert>
+        <insert tableName="account">
+            <column name="id" value="6"/>
+            <column name="name" value="AlexSmith1"/>
+            <column name="date_opened" value="2023-03-16"/>
+            <column name="balance" value="0.0"/>
+            <column name="type_id" value="2"/>
+            <column name="user_id" value="3"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

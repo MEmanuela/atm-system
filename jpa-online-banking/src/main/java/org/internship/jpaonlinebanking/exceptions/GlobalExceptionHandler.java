@@ -1,8 +1,10 @@
 package org.internship.jpaonlinebanking.exceptions;
 
+import jakarta.persistence.RollbackException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.validation.FieldError;
 
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +53,12 @@ public class GlobalExceptionHandler {
                                                                           HttpServletRequest request) {
         String error = ex.getMessage();
         return buildResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN, error));
+    }
+    @ExceptionHandler(InvalidPathException.class)
+    public final ResponseEntity<Object> handleInvalidPathException(InvalidPathException ex,
+                                                                   HttpServletRequest request) {
+        String error = ex.getMessage();
+        return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
     }
     @ExceptionHandler(BadCredentialsException.class)
     public final ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex,
@@ -88,6 +97,12 @@ public class GlobalExceptionHandler {
         response.setMessage(String.valueOf(errors));
         return buildResponseEntity(response);
     }
+    @ExceptionHandler(RollbackException.class)
+    public final ResponseEntity<Object> handleRollbackException(RollbackException ex,
+                                                                   HttpServletRequest request) {
+        String error = ex.getMessage();
+        return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
+    }
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public final ResponseEntity<Object> handleEmptyResultException(EmptyResultDataAccessException ex,
                                                         HttpServletRequest request) {
@@ -113,6 +128,12 @@ public class GlobalExceptionHandler {
         String error = ex.getContentType() + " media type is not supported. Supported media types are " +
                 ex.getSupportedMediaTypes();
         return buildResponseEntity(new ErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, error));
+    }
+    @ExceptionHandler(DataAccessException.class)
+    public final ResponseEntity<Object> handleDataAccessException(DataAccessException ex,
+                                                                  HttpServletRequest request) {
+        String error = ex.getMessage();
+        return buildResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN, error));
     }
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, HttpServletRequest request) {
