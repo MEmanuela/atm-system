@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -64,7 +65,7 @@ public class UserService {
     public User createUser(Long roleId, User user) {
         List<User> users = new ArrayList<User>();
         Role role1 = new Role();
-
+        
         Optional<Role> byId = roleRepository.findById(roleId);
         if (!byId.isPresent()) {
             throw new ResourceNotFoundException("Role with id " + roleId + " does not exist");
@@ -86,7 +87,7 @@ public class UserService {
 
         return user1;
     }
-    @Transactional
+
     public void updateUserPassword(Long userId, String password) {
         User user = userRepository.findById(userId).get();
         user.setPassword(passwordEncoder.encode(password));

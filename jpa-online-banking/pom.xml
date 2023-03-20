@@ -48,6 +48,16 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>4.17.2</version>
+		</dependency>
+		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.11.5</version>
@@ -61,6 +71,11 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.passay</groupId>
+			<artifactId>passay</artifactId>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -85,81 +100,94 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>sql-maven-plugin</artifactId>
-				<version>1.5</version>
-				<dependencies>
-					<dependency>
-						<groupId>mysql</groupId>
-						<artifactId>mysql-connector-java</artifactId>
-						<version>8.0.32</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<driver>com.mysql.cj.jdbc.Driver</driver>
-					<url>jdbc:mysql://localhost:3306/</url>
-					<username>root</username>
-					<password>Hello2you2!</password>
-				</configuration>
-				<executions>
-					<execution>
-						<id>create-schema</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<autocommit>true</autocommit>
-							<srcFiles>
-								<srcFile>src/main/resources/create-atm-db.sql</srcFile>
-							</srcFiles>
-						</configuration>
-					</execution>
-					<execution>
-						<id>create-schema-tables</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<autocommit>true</autocommit>
-							<sqlCommand>USE atm</sqlCommand>
-							<srcFiles>
-								<srcFile>src/main/resources/schema.sql</srcFile>
-							</srcFiles>
-						</configuration>
-					</execution>
-					<execution>
-						<id>populate-db</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<sqlCommand>USE atm</sqlCommand>
-							<orderFile>ascending</orderFile>
-							<fileset>
-								<basedir>${basedir}</basedir>
-								<includes>
-									<include>src/main/resources/init/data.sql</include>
-								</includes>
-							</fileset>
-						</configuration>
-					</execution>
-					<execution>
-						<id>drop-db</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<autocommit>true</autocommit>
-							<sqlCommand>DROP SCHEMA IF EXISTS atm</sqlCommand>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.codehaus.mojo</groupId>-->
+<!--				<artifactId>sql-maven-plugin</artifactId>-->
+<!--				<version>1.5</version>-->
+<!--				<dependencies>-->
+<!--&lt;!&ndash;					<dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;						<groupId>mysql</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<artifactId>mysql-connector-java</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<version>8.0.32</version>&ndash;&gt;-->
+<!--&lt;!&ndash;					</dependency>&ndash;&gt;-->
+<!--					<dependency>-->
+<!--						<groupId>org.postgresql</groupId>-->
+<!--						<artifactId>postgresql</artifactId>-->
+<!--						<version>42.5.1</version>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
+<!--&lt;!&ndash;				<configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;					<driver>com.mysql.cj.jdbc.Driver</driver>&ndash;&gt;-->
+<!--&lt;!&ndash;					<url>jdbc:mysql://localhost:3306/</url>&ndash;&gt;-->
+<!--&lt;!&ndash;					<username>root</username>&ndash;&gt;-->
+<!--&lt;!&ndash;					<password>Hello2you2!</password>&ndash;&gt;-->
+<!--&lt;!&ndash;				</configuration>&ndash;&gt;-->
+<!--				<configuration>-->
+<!--					<driver>org.postgresql.Driver</driver>-->
+<!--					<url>jdbc:postgresql://localhost/atm</url>-->
+<!--					<username>postgres</username>-->
+<!--					<password>Hello2you2!</password>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>create-schema</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>execute</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<autocommit>true</autocommit>-->
+<!--							<srcFiles>-->
+<!--								<srcFile>src/main/resources/create-atm-db.sql</srcFile>-->
+<!--							</srcFiles>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>create-schema-tables</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>execute</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<autocommit>true</autocommit>-->
+<!--							<sqlCommand>USE atm</sqlCommand>-->
+<!--							<srcFiles>-->
+<!--								<srcFile>src/main/resources/schema.sql</srcFile>-->
+<!--							</srcFiles>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>populate-db</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>execute</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<sqlCommand>USE atm</sqlCommand>-->
+<!--							<orderFile>ascending</orderFile>-->
+<!--							<fileset>-->
+<!--								<basedir>${basedir}</basedir>-->
+<!--								<includes>-->
+<!--									<include>src/main/resources/init/data.sql</include>-->
+<!--								</includes>-->
+<!--							</fileset>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>drop-db</id>-->
+<!--						<phase>clean</phase>-->
+<!--						<goals>-->
+<!--							<goal>execute</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<autocommit>true</autocommit>-->
+<!--							<srcFiles>-->
+<!--								<srcFile>src/main/resources/drop-db.sql</srcFile>-->
+<!--							</srcFiles>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 

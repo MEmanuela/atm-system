@@ -70,6 +70,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } catch (Exception exception) {
+            String error = exception.getMessage();
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, error);
+
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+
         }
     }
 }

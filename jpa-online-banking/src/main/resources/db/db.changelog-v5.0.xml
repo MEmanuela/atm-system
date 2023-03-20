@@ -1,0 +1,44 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+                    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="date-time" value="datetime" dbms="mysql"/>
+    <property name="date-time" value="TIMESTAMP WITHOUT TIME ZONE" dbms="postgresql"/>
+
+    <preConditions onFail="WARN">
+        <not>
+            <tableExists tableName="role"/>
+            <tableExists tableName="user_"/>
+            <tableExists tableName="account_type"/>
+            <tableExists tableName="account"/>
+            <tableExists tableName="transaction_type"/>
+            <tableExists tableName="transaction"/>
+        </not>
+    </preConditions>
+
+    <changeSet id="5" author="ema">
+        <createTable tableName="token">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="is_expired" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_revoked" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="token" baseColumnNames="user_id" constraintName="user_tk_fk"
+                                 referencedTableName="user_"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -23,7 +23,6 @@ public class AccountService {
     AccountTypeRepository accountTypeRepository;
     @Autowired
     UserRepository userRepository;
-
     @Transactional
     public Account createAccount(Long typeId, Account account, Long userId) {
         List<Account> accounts = new ArrayList<Account>();
@@ -45,7 +44,7 @@ public class AccountService {
         // tie User to Account
         account.setUser(user);
         account.setBalance(0.0);
-        account.setName(account.getName().replace(" ", ""));
+        account.setName(account.getName().replace(" ", "_") + "_" + getRandomInteger(100, 1));
         account.setDateOpened(new Date());
 
         Account account1 = accountRepository.save(account);
@@ -78,5 +77,8 @@ public class AccountService {
     @Transactional
     public void deleteAccountByName(String name) {
         accountRepository.deleteByName(name);
+    }
+    public static int getRandomInteger(int maximum, int minimum){
+        return ((int) (Math.random()*(maximum - minimum))) + minimum;
     }
 }
