@@ -6,18 +6,13 @@
     <property name="date-time" value="datetime" dbms="mysql"/>
     <property name="date-time" value="TIMESTAMP WITHOUT TIME ZONE" dbms="postgresql"/>
 
-    <preConditions onFail="WARN">
-        <not>
-            <tableExists tableName="role"/>
-            <tableExists tableName="user_"/>
-            <tableExists tableName="account_type"/>
-            <tableExists tableName="account"/>
-            <tableExists tableName="transaction_type"/>
-            <tableExists tableName="transaction"/>
-        </not>
-    </preConditions>
-
-    <changeSet id="2" author="ema">
+    <changeSet id="test-2" author="ema" runAlways="true" context="test">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="account_type"/>
+                <tableExists tableName="account"/>
+            </not>
+        </preConditions>
         <createTable tableName="account_type">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -49,10 +44,10 @@
         </createTable>
         <addForeignKeyConstraint baseTableName="account" baseColumnNames="type_id" constraintName="acc_type_fk"
                                  referencedTableName="account_type"
-                                 referencedColumnNames="id" onDelete="CASCADE"/>
+                                 referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="account" baseColumnNames="user_id" constraintName="user_fk"
                                  referencedTableName="user_"
-                                 referencedColumnNames="id" onDelete="CASCADE"/>
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

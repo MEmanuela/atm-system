@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
+import org.internship.jpaonlinebanking.exceptions.UniqueConstraintException;
 import org.internship.jpaonlinebanking.repositories.RoleRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +57,11 @@ public class UserService {
         return name.toLowerCase().replace(" ", "_");
     }
     public String generateDefaultPassword(String n, String pcn) {
-        String name = n.toLowerCase().replace(" ", "");
+        String name = n.substring(0, 1).toUpperCase() +
+                n.substring(1).toLowerCase().replace(" ", "");
         return name.substring(name.length() -3, name.length())
                 + pcn.substring(pcn.length()/2-1, pcn.length()/2 + 2)
-                + name.substring(0, 3);
+                + name.substring(0, 3) + "#";
     }
     @Transactional
     public User createUser(Long roleId, User user) {
@@ -71,7 +73,12 @@ public class UserService {
             throw new ResourceNotFoundException("Role with id " + roleId + " does not exist");
         }
         Role role = byId.get();
-
+        if (userRepository.existsByPersonalCodeNumber(user.getPersonalCodeNumber())) {
+            throw new UniqueConstraintException("A user with the specified pcn already exists");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new UniqueConstraintException("A user with the specified email address exists");
+        }
         // tie Role to User
         user.setRole(role);
         String username = generateDefaultUsername(user.getName());

@@ -5,6 +5,7 @@ import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
+import org.internship.jpaonlinebanking.security.PasswordUpdateRequest;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +43,14 @@ public class AdminController {
     @DeleteMapping("/account/{accountName}")
     public void deleteAccount(@PathVariable(value = "accountName") String name) {
         accountService.deleteAccountByName(name);
+    }
+    @PutMapping("/{userId}/password")
+    public void updatePassword(@PathVariable(value = "userId") Long userId,
+                               @Valid @RequestBody PasswordUpdateRequest request,
+                               @AuthenticationPrincipal User user) {
+        if (user.getUserId() != userId) {
+            throw new AuthorizationException("You are not authorized to change user's password");
+        }
+        userService.updateUserPassword(userId, request.getPassword());
     }
 }

@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
                     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="4" author="ema">
+    <changeSet id="test-4" author="ema" runAlways="true" context="test">
         <insert tableName="role">
             <column name="id" value="1"/>
             <column name="type" value="admin"/>
@@ -46,7 +46,7 @@
             <column name="email" value="paul.hewson@gmail.com"/>
             <column name="personal_code_number" value="8965223841087"/>
             <column name="username" value="paul_hewson"/>
-            <column name="password" value="$2a$10$UUxb02F2U5otrT1k8Xi3JenfOM/zeN9icn3ICDgvcVU6/j6Nlvp/2"/>
+            <column name="password" value="$2a$10$CDzNYTgimt7von8IRlsU2eWIfnxt/IuoNksu/qZih.mTU4HOZggzS"/>
             <column name="role_id" value="2"/>
         </insert>
         <insert tableName="user_">
@@ -56,7 +56,7 @@
             <column name="email" value="adam.clayton@gmail.com"/>
             <column name="personal_code_number" value="9085447123690"/>
             <column name="username" value="adam_clayton"/>
-            <column name="password" value="$2a$10$xkwOtqr9qhuhKFzp/Bx6LeDYDOPVkAxlxxUuKvwWu2JjIQEKYg3VG"/>
+            <column name="password" value="$2a$10$/PacO64PwJeBK82LdeZxoO3QbysaV7SLWQD4TJk7bp0yJSR2BJWc2"/>
             <column name="role_id" value="2"/>
         </insert>
         <insert tableName="user_">
@@ -66,7 +66,7 @@
             <column name="email" value="alex.smith@gmail.com"/>
             <column name="personal_code_number" value="9539486851785"/>
             <column name="username" value="alex_smith"/>
-            <column name="password" value="$2a$10$37qCJOIYz/UFY0n8RomoZ.RCN6kq4kpjA54i3H3PYeMzUhlgiyDwK"/>
+            <column name="password" value="$2a$10$wnVs14z7Qc8JHvdrsxYihukN5C0mUiUp4dcwR6o.Iche50Tc9Q5dm"/>
             <column name="role_id" value="2"/>
         </insert>
         <insert tableName="user_">
@@ -76,7 +76,7 @@
             <column name="email" value="criss.evans@gmail.com"/>
             <column name="personal_code_number" value="9539496851785"/>
             <column name="username" value="criss_evans"/>
-            <column name="password" value="$2a$10$AtYI.55WPbYoKmqM/lGjG.r.4Bbhk/YGH0UlDPC/T85lWAAmgO7r."/>
+            <column name="password" value="$2a$10$Z7s6/lojv/u/tqJ15qU8duw9gKKAhrN9WA24X48CPbV/AteMxx/EK"/>
             <column name="role_id" value="1"/>
         </insert>
 
@@ -116,7 +116,7 @@
             <column name="id" value="5"/>
             <column name="name" value="AlexSmith"/>
             <column name="date_opened" value="2023-03-16"/>
-            <column name="balance" value="0.0"/>
+            <column name="balance" value="20.0"/>
             <column name="type_id" value="1"/>
             <column name="user_id" value="3"/>
         </insert>

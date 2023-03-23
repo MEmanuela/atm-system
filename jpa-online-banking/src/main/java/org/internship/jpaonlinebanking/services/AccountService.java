@@ -23,6 +23,14 @@ public class AccountService {
     AccountTypeRepository accountTypeRepository;
     @Autowired
     UserRepository userRepository;
+    private Long countUsersAccounts(Long userId) {
+        List<Account> accounts = accountRepository.findByUser_UserId(userId);
+        return Long.valueOf(accounts.size());
+    }
+    private String generateAccountName(Long userId, String type) {
+        Long accId = countUsersAccounts(userId);
+        return "ACC_" + userId + "_" + type + "_" + accId;
+    }
     @Transactional
     public Account createAccount(Long typeId, Account account, Long userId) {
         List<Account> accounts = new ArrayList<Account>();
@@ -44,8 +52,8 @@ public class AccountService {
         // tie User to Account
         account.setUser(user);
         account.setBalance(0.0);
-        account.setName(account.getName().replace(" ", "_") + "_" + getRandomInteger(100, 1));
         account.setDateOpened(new Date());
+        account.setName(generateAccountName(userId, type.getType()));
 
         Account account1 = accountRepository.save(account);
 
@@ -58,7 +66,9 @@ public class AccountService {
 
         return account1;
     }
-
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
+    }
     public List<Account> getAccountsByUser(Long userId) {
         return accountRepository.findByUser_UserId(userId);
     }
@@ -69,6 +79,10 @@ public class AccountService {
         return accountRepository.findById(accountId);
     }
     public Optional<Account> getAccountByName(String name) {
+        Optional<Account> account = accountRepository.findByName(name);
+        if (!account.isPresent()) {
+            throw new ResourceNotFoundException("Account with that name doesn't exist");
+        }
         return accountRepository.findByName(name);
     }
     public void deleteAccountById(Long accountId) {

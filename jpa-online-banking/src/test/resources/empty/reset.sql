@@ -1,9 +1,7 @@
-SET REFERENTIAL_INTEGRITY FALSE;
-TRUNCATE TABLE role RESTART IDENTITY;
-TRUNCATE TABLE user RESTART IDENTITY;
-TRUNCATE TABLE account_type RESTART IDENTITY;
-TRUNCATE TABLE account RESTART IDENTITY;
-TRUNCATE TABLE transaction_type RESTART IDENTITY;
-TRUNCATE TABLE transaction RESTART IDENTITY;
-TRUNCATE TABLE token RESTART IDENTITY;
-SET REFERENTIAL_INTEGRITY TRUE;
+
+SELECT setval('role_id_seq', (select max(id) from role));
+SELECT setval('account_type_id_seq', (select max(id) from account_type));
+SELECT setval('transaction_type_id_seq', (select max(id) from transaction_type));
+SELECT setval('user__id_seq', (select max(id) from user_));
+SELECT setval('account_id_seq', (select max(id) from account));
+SELECT setval('transaction_id_seq', (select max(id) from transaction));

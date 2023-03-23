@@ -6,18 +6,13 @@
     <property name="date-time" value="datetime" dbms="mysql"/>
     <property name="date-time" value="TIMESTAMP WITHOUT TIME ZONE" dbms="postgresql"/>
 
-    <preConditions onFail="WARN">
-        <not>
-            <tableExists tableName="role"/>
-            <tableExists tableName="user_"/>
-            <tableExists tableName="account_type"/>
-            <tableExists tableName="account"/>
-            <tableExists tableName="transaction_type"/>
-            <tableExists tableName="transaction"/>
-        </not>
-    </preConditions>
-
-    <changeSet id="3" author="ema">
+    <changeSet id="test-3" author="ema" runAlways="true" context="test">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="transaction_type"/>
+                <tableExists tableName="transaction"/>
+            </not>
+        </preConditions>
         <createTable tableName="transaction_type">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -47,13 +42,13 @@
 
         <addForeignKeyConstraint baseTableName="transaction" baseColumnNames="base_acc_id" constraintName="base_acc_fk"
                                  referencedTableName="account"
-                                 referencedColumnNames="id" onDelete="CASCADE"/>
+                                 referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="transaction" baseColumnNames="recv_acc_id" constraintName="recv_acc_fk"
                                  referencedTableName="account"
-                                 referencedColumnNames="id" onDelete="CASCADE"/>
+                                 referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="transaction" baseColumnNames="type_id" constraintName="trans_type_fk"
                                  referencedTableName="transaction_type"
-                                 referencedColumnNames="id" onDelete="CASCADE"/>
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

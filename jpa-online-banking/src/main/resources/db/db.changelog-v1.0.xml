@@ -55,7 +55,7 @@
         </createTable>
         <addForeignKeyConstraint baseTableName="user_" baseColumnNames="role_id" constraintName="role_fk"
                                  referencedTableName="role"
-                                 referencedColumnNames="id"/>
+                                 referencedColumnNames="id" onDelete="CASCADE"/>
     </changeSet>
 
 </databaseChangeLog>

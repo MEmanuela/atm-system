@@ -24,5 +24,6 @@ public class Token {
     private boolean isRevoked;
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }
