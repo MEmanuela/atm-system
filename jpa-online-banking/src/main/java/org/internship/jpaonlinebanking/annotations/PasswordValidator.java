@@ -40,6 +40,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 
         String messageTemplate = messages.stream()
                 .collect(Collectors.joining(","));
+        System.out.println(messageTemplate);
         constraintValidatorContext.buildConstraintViolationWithTemplate(messageTemplate)
                 .addConstraintViolation()
                 .disableDefaultConstraintViolation();

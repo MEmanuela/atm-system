@@ -54,6 +54,12 @@ public class GlobalExceptionHandler {
         String error = ex.getMessage();
         return buildResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN, error));
     }
+    @ExceptionHandler(UniqueConstraintException.class)
+    public final ResponseEntity<Object> handleUniqueConstraintException(UniqueConstraintException ex,
+                                                                        HttpServletRequest request) {
+        String error = ex.getMessage();
+        return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
+    }
     @ExceptionHandler(InvalidPathException.class)
     public final ResponseEntity<Object> handleInvalidPathException(InvalidPathException ex,
                                                                    HttpServletRequest request) {

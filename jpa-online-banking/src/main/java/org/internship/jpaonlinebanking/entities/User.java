@@ -46,13 +46,13 @@ public class User implements UserDetails {
     @ValidEmail
     private String email;
     @Column(name = "PersonalCodeNumber", updatable = false)
-    @NotBlank(message = "Personal Code Number can not be null")
+    @NotBlank(message = "Personal Code Number is required")
     @ValidPersonalCodeNr
     private String personalCodeNumber;
     @Column(name = "Username", updatable = false, unique = true)
     private String username;
     @Column(name = "Password")
-    @ValidPassword
+//    @ValidPassword
     private String password;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId", nullable = false)

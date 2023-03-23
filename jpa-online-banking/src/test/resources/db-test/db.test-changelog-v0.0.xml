@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+                    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="test-drop-tables" author="ema" runAlways="true" context="test">
+        <preConditions onFail="MARK_RAN">
+                <tableExists tableName="role"/>
+                <tableExists tableName="user_"/>
+                <tableExists tableName="account_type"/>
+                <tableExists tableName="account"/>
+                <tableExists tableName="transaction_type"/>
+                <tableExists tableName="transaction"/>
+        </preConditions>
+        <dropTable cascadeConstraints="true" tableName="transaction"/>
+        <dropTable cascadeConstraints="true" tableName="transaction_type"/>
+        <dropTable cascadeConstraints="true" tableName="account"/>
+        <dropTable cascadeConstraints="true" tableName="account_type"/>
+        <dropTable cascadeConstraints="true" tableName="token"/>
+        <dropTable cascadeConstraints="true" tableName="user_"/>
+        <dropTable cascadeConstraints="true" tableName="role"/>
+    </changeSet>
+
+</databaseChangeLog>

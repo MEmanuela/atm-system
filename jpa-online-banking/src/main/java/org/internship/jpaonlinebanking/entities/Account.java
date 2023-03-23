@@ -30,8 +30,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     @Column(name = "Name", unique = true)
-    @NotBlank(message = "Name is required")
-    @NotNull(message = "Name cannot be null")
     private String name;
     @Column(name = "DateOpened")
     private Date dateOpened;
