@@ -32,6 +32,7 @@ public class AdminController {
     }
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@PathVariable(value = "userId") Long userId) {
+        // comment from conflict-test
         userService.deleteUserById(userId);
     }
     @PostMapping("/{userId}/{typeId}/account")
