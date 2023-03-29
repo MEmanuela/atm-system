@@ -36,11 +36,13 @@ public class TransactionService {
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
-    public Optional<Transaction> getTransactionById(Long transactionId) {
-        if (!transactionRepository.existsById(transactionId)) {
+
+    public Transaction getTransactionById(Long transactionId) {
+        Optional<Transaction> transaction = transactionRepository.findById(transactionId);
+        if (!transaction.isPresent()) {
             throw new ResourceNotFoundException("Transaction with id " + transactionId + "not found");
         }
-        return transactionRepository.findById(transactionId);
+        return transaction.get();
     }
     public List<Transaction> getTransactionsByType(Long typeId) {
         return transactionRepository.findByTransactionType_Id(typeId);
@@ -65,9 +67,9 @@ public class TransactionService {
 
     @Transactional
     public Transaction createBasicTransaction(Long typeId, Transaction transaction, Long accountId) {
-        List<Transaction> transactions = new ArrayList<Transaction>();
-        TransactionType type1 = new TransactionType();
-        Account account1 = new Account();
+//        List<Transaction> transactions = new ArrayList<Transaction>();
+//        TransactionType type1 = new TransactionType();
+//        Account account1 = new Account();
 
         Optional<TransactionType> byId = transactionTypeRepository.findById(typeId);
         Optional<Account> forAccount = accountRepository.findById(accountId);
@@ -97,23 +99,23 @@ public class TransactionService {
             transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() + amount);
         }
 
-        Transaction transaction1 = transactionRepository.save(transaction);
+        Transaction storedTransaction = transactionRepository.save(transaction);
 
         // tie Transaction to TransactionType
         // tie Transaction to Account
-        transactions.add(transaction1);
+//        transactions.add(transaction1);
 
         //type1.setTransactions(transactions);
         //account1.setBaseAccountTransactions(transactions);
 
-        return transaction1;
+        return storedTransaction;
     }
     @Transactional
     public Transaction createTransferTransaction(Long typeId, Transaction transaction,
                                                  Long baseAccountId, Long receivingAccountId) {
-        List<Transaction> transactions = new ArrayList<Transaction>();
-        TransactionType type1 = new TransactionType();
-        Account account1 = new Account();
+//        List<Transaction> transactions = new ArrayList<Transaction>();
+//        TransactionType type1 = new TransactionType();
+//        Account account1 = new Account();
 
         Optional<TransactionType> byId = transactionTypeRepository.findById(typeId);
         Optional<Account> forBaseAccount = accountRepository.findById(baseAccountId);
@@ -146,16 +148,16 @@ public class TransactionService {
         if (transaction.getBaseAccount().getBalance() < 0.0) {
             throw new TransactionException("Not enough money to transfer");
         }
-        Transaction transaction1 = transactionRepository.save(transaction);
+        Transaction storedTransaction = transactionRepository.save(transaction);
 
         // tie Transaction to TransactionType
         // tie Transaction to Account
-        transactions.add(transaction1);
+//        transactions.add(transaction1);
 
         //type1.setTransactions(transactions);
         //account1.setBaseAccountTransactions(transactions);
         //account1.setReceivingAccountTransactions(transactions);
 
-        return transaction1;
+        return storedTransaction;
     }
 }

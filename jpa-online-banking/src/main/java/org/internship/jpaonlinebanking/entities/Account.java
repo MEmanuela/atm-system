@@ -2,9 +2,6 @@ package org.internship.jpaonlinebanking.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "Account")
@@ -47,9 +42,9 @@ public class Account {
 //    private List<Transaction> baseAccountTransactions = new ArrayList<Transaction>();
 //    @OneToMany(mappedBy = "receivingAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Transaction> receivingAccountTransactions = new ArrayList<Transaction>();
-    public User getUser() {
-        return user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
     @JsonIgnore
     public void setAccountType(AccountType type) {
         this.accountType = type;

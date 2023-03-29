@@ -1,4 +1,4 @@
-package org.internship.jpaonlinebanking.annotations;
+package org.internship.jpaonlinebanking.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -19,7 +19,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return (validateEmail(email));
+        return validateEmail(email);
     }
 
     private boolean validateEmail(String email) {

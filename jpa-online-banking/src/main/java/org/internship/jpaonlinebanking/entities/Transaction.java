@@ -44,15 +44,15 @@ public class Transaction {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TransactionType transactionType;
 
-    public TransactionType getTransactionType() {
-        return transactionType;
-    }
-    public Account getBaseAccount() {
-        return baseAccount;
-    }
-    public Account getReceivingAccount() {
-        return receivingAccount;
-    }
+//    public TransactionType getTransactionType() {
+//        return transactionType;
+//    }
+//    public Account getBaseAccount() {
+//        return baseAccount;
+//    }
+//    public Account getReceivingAccount() {
+//        return receivingAccount;
+//    }
     @JsonIgnore
     public void setBaseAccount(Account baseAccount) {
         this.baseAccount = baseAccount;

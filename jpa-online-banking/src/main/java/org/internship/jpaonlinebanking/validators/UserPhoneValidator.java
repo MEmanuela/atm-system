@@ -1,4 +1,4 @@
-package org.internship.jpaonlinebanking.annotations;
+package org.internship.jpaonlinebanking.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

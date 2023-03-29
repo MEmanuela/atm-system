@@ -78,7 +78,7 @@ public class AdminControllerIntTests {
         user.setName("Scarlet Brandy");
         user.setPhone("0956695231");
         user.setEmail("scarlet.brandy@gmail.com");
-        user.setPersonalCodeNumber("9539486851785");
+        user.setPersonalCodeNumber("9539496451785");
         user.setRole(new Role(2l, "customer"));
         Long uId = Long.valueOf(userService.getAllUsers().size());
 
@@ -89,7 +89,7 @@ public class AdminControllerIntTests {
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        assertThat(userService.getUserById(uId).get().equals(user));
+        assertThat(userService.getUserById(uId).equals(user));
     }
     @Test
     void createAccountReturnsTheAccount() throws Exception {
@@ -114,7 +114,7 @@ public class AdminControllerIntTests {
         user.setName("Leila Dixon");
         user.setPhone("0956695231");
         user.setEmail("leila.dixon@gmail.com");
-        user.setPersonalCodeNumber("9539486851785");
+        user.setPersonalCodeNumber("9539486341785");
         user.setRole(new Role(2l, "customer"));
         userService.createUser(2l, user);
         Long uId = Long.valueOf(userService.getAllUsers().size());

@@ -24,10 +24,10 @@ public class UserController {
         return userService.createUser(roleId, user);
     }
 
-    @GetMapping("/user/{userId}")
-    public Optional<User> getUserById(@PathVariable(value = "userId") Long userId) {
-        return userService.getUserById(userId);
-    }
+//    @GetMapping("/user/{userId}")
+//    public User getUserById(@PathVariable(value = "userId") Long userId) {
+//        return userService.getUserById(userId);
+//    }
 
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@PathVariable(value = "userId") Long userId) {

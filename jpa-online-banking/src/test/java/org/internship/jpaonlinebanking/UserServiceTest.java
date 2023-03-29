@@ -1,5 +1,6 @@
 package org.internship.jpaonlinebanking;
 
+import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.repositories.RoleRepository;
@@ -52,11 +53,11 @@ public class UserServiceTest {
         //when
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        when(userRepository.existsById(anyLong()))
-                .thenReturn(true);
+//        when(userRepository.existsById(anyLong()))
+//                .thenReturn(true);
         var actual = underTest.getUserById(1l);
         //then
-        assertThat(actual).usingRecursiveComparison().isEqualTo(Optional.of(user));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(user);
         verify(userRepository).findById(anyLong());
     }
     @Test
@@ -110,7 +111,7 @@ public class UserServiceTest {
         underTest.createUser(1l, user);
         //then
         assertThat(userRepository.findById(anyLong()).get()
-                .getPassword()).isEqualTo("doe188joh");
+                .getPassword()).isEqualTo("doe188Joh#");
 
     }
     @Test

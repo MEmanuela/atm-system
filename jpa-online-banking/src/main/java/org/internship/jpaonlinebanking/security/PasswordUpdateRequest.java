@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.internship.jpaonlinebanking.annotations.ValidPassword;
+import org.internship.jpaonlinebanking.validators.ValidPassword;
 
 @Data
 @Builder

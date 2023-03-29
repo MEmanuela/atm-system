@@ -23,19 +23,21 @@ public class AccountService {
     AccountTypeRepository accountTypeRepository;
     @Autowired
     UserRepository userRepository;
-    private Long countUsersAccounts(Long userId) {
-        List<Account> accounts = accountRepository.findByUser_UserId(userId);
-        return Long.valueOf(accounts.size());
+
+    private short countUsersAccounts(Long userId) {
+        return accountRepository.countByUser_UserId(userId);
     }
+
     private String generateAccountName(Long userId, String type) {
-        Long accId = countUsersAccounts(userId);
+        short accId = countUsersAccounts(userId);
         return "ACC_" + userId + "_" + type + "_" + accId;
     }
+
     @Transactional
     public Account createAccount(Long typeId, Account account, Long userId) {
-        List<Account> accounts = new ArrayList<Account>();
-        AccountType type1 = new AccountType();
-        User user1 = new User();
+//        List<Account> accounts = new ArrayList<Account>();
+//        AccountType type1 = new AccountType();
+//        User user1 = new User();
 
         Optional<AccountType> byId = accountTypeRepository.findById(typeId);
         Optional<User> forUser = userRepository.findById(userId);
@@ -55,44 +57,44 @@ public class AccountService {
         account.setDateOpened(new Date());
         account.setName(generateAccountName(userId, type.getType()));
 
-        Account account1 = accountRepository.save(account);
+        Account storedAccount = accountRepository.save(account);
 
         // tie Account to Account Type
         // tie Account to User
-        accounts.add(account1);
+//        accounts.add(account1);
 
 //        type1.setAccounts(accounts);
 //        user1.setAccounts(accounts);
 
-        return account1;
+        return storedAccount;
     }
+
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
+
     public List<Account> getAccountsByUser(Long userId) {
         return accountRepository.findByUser_UserId(userId);
     }
-    public Optional<Account> getAccountById(Long accountId) {
-        if (!accountRepository.existsById(accountId)) {
+
+    public Account getAccountById(Long accountId) {
+        Optional<Account> account = accountRepository.findById(accountId);
+        if (!account.isPresent()) {
             throw new ResourceNotFoundException("Account with id " + accountId + " not found");
         }
-        return accountRepository.findById(accountId);
+        return account.get();
     }
-    public Optional<Account> getAccountByName(String name) {
+
+    public Account getAccountByName(String name) {
         Optional<Account> account = accountRepository.findByName(name);
         if (!account.isPresent()) {
             throw new ResourceNotFoundException("Account with that name doesn't exist");
         }
-        return accountRepository.findByName(name);
+        return account.get();
     }
-    public void deleteAccountById(Long accountId) {
-        accountRepository.deleteById(accountId);
-    }
+
     @Transactional
     public void deleteAccountByName(String name) {
         accountRepository.deleteByName(name);
-    }
-    public static int getRandomInteger(int maximum, int minimum){
-        return ((int) (Math.random()*(maximum - minimum))) + minimum;
     }
 }

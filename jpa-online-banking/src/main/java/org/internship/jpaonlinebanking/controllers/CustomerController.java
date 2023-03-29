@@ -1,7 +1,6 @@
 package org.internship.jpaonlinebanking.controllers;
 
 import jakarta.validation.Valid;
-import org.internship.jpaonlinebanking.config.JwtService;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.User;
@@ -12,11 +11,12 @@ import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -28,12 +28,12 @@ public class CustomerController {
     @Autowired
     TransactionService transactionService;
     @GetMapping("/user/{userId}")
-    public Optional<User> getUserById(@PathVariable(value = "userId") Long userId,
-                                      @AuthenticationPrincipal User user) {
+    public ResponseEntity<User> getUserById(@PathVariable(value = "userId") Long userId,
+                                               @AuthenticationPrincipal User user) {
         if (user.getUserId() != userId) {
             throw new AuthorizationException("You are not authorized to see user's details");
         }
-        return userService.getUserById(userId);
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
     @GetMapping("/accounts/{userId}")
     public List<Account> getAccountsByUser(@PathVariable(value = "userId") Long userId,
