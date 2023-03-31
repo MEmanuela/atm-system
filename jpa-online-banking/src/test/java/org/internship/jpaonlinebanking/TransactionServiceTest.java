@@ -1,7 +1,9 @@
 package org.internship.jpaonlinebanking;
 
+import org.internship.jpaonlinebanking.dtos.TransactionDTO;
 import org.internship.jpaonlinebanking.entities.*;
 import org.internship.jpaonlinebanking.exceptions.TransactionException;
+import org.internship.jpaonlinebanking.mappers.TransactionMapper;
 import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionTypeRepository;
@@ -37,7 +39,7 @@ public class TransactionServiceTest {
     private TransactionService underTest;
     @BeforeEach
     void setUp() {
-        underTest = new TransactionService(transactionTypeRepository, transactionRepository, accountRepository);
+        underTest = new TransactionService(transactionRepository, transactionTypeRepository, accountRepository);
     }
     @Test
     void canGetAllTransactions() {
@@ -74,22 +76,26 @@ public class TransactionServiceTest {
     void canCreateBasicTransaction() {
         //given
         Account account = new Account();
-        account.setName("Test Account");
-        account.setBalance(60.0);
-        Transaction transaction = new Transaction();
-        transaction.setAmount(20.0);
+        account.setName("ACC_1_basic_0");
+        account.setBalance(40.0);
+
+        TransactionDTO dto = new TransactionDTO();
+        dto.setAmount(20.0);
+        dto.setDate(new Date());
+
         //when
         when(transactionTypeRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new TransactionType(1l, "withdraw")));
         when(accountRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
-        underTest.createBasicTransaction(1l, transaction, 1l);
+        underTest.createBasicTransaction(1l, dto, 1l);
         //then
         ArgumentCaptor<Transaction> transactionArgumentCaptor =
                 ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).save(transactionArgumentCaptor.capture());
         Transaction capturedTransaction = transactionArgumentCaptor.getValue();
-        assertThat(capturedTransaction).isEqualTo(transaction);
+        assertThat(capturedTransaction.getBaseAccount()).isEqualTo(account);
+        assertThat(capturedTransaction.getTransactionType().getType()).isEqualTo("withdraw");
     }
     @Test
     void withdrawTransactionDeductsMoneyFromAccount() {
@@ -99,6 +105,8 @@ public class TransactionServiceTest {
         account.setBalance(40.0);
         Transaction transaction = new Transaction();
         transaction.setAmount(20.0);
+        transaction.setBaseAccount(account);
+        TransactionDTO dto = TransactionMapper.INSTANCE.toTransactionDTO(transaction);
         //when
         when(transactionTypeRepository.findById(1l))
                 .thenReturn(Optional.of(new TransactionType(1l, "withdraw")));
@@ -106,7 +114,7 @@ public class TransactionServiceTest {
                 .thenReturn(Optional.of(account));
         when(transactionRepository.findById(anyLong()))
                 .thenReturn(Optional.of(transaction));
-        underTest.createBasicTransaction(1l, transaction, 1l);
+        underTest.createBasicTransaction(1l, dto, 1l);
         //then
         assertThat(transactionRepository.findById(anyLong()).get()
                 .getBaseAccount().getBalance()).isEqualTo(20.0);
@@ -119,6 +127,7 @@ public class TransactionServiceTest {
         account.setBalance(10.0);
         Transaction transaction = new Transaction();
         transaction.setAmount(20.0);
+        TransactionDTO dto = TransactionMapper.INSTANCE.toTransactionDTO(transaction);
         //when
         when(transactionTypeRepository.findById(1l))
                 .thenReturn(Optional.of(new TransactionType(1l, "withdraw")));
@@ -126,7 +135,7 @@ public class TransactionServiceTest {
                 .thenReturn(Optional.of(account));
 
         //then
-        assertThrows(TransactionException.class, () -> underTest.createBasicTransaction(1l, transaction, 1l));
+        assertThrows(TransactionException.class, () -> underTest.createBasicTransaction(1l, dto, 1l));
     }
     @Test
     void depositTransactionAddsMoneyToAccount() {
@@ -136,6 +145,8 @@ public class TransactionServiceTest {
         account.setBalance(40.0);
         Transaction transaction = new Transaction();
         transaction.setAmount(20.0);
+        transaction.setBaseAccount(account);
+        TransactionDTO dto = TransactionMapper.INSTANCE.toTransactionDTO(transaction);
         //when
         when(transactionTypeRepository.findById(2l))
                 .thenReturn(Optional.of(new TransactionType(2l, "deposit")));
@@ -143,7 +154,7 @@ public class TransactionServiceTest {
                 .thenReturn(Optional.of(account));
         when(transactionRepository.findById(anyLong()))
                 .thenReturn(Optional.of(transaction));
-        underTest.createBasicTransaction(2l, transaction, 1l);
+        underTest.createBasicTransaction(2l, dto, 1l);
         //then
         assertThat(transactionRepository.findById(anyLong()).get()
                 .getBaseAccount().getBalance()).isEqualTo(60.0);
@@ -161,6 +172,9 @@ public class TransactionServiceTest {
         receivingAccount.setAccountId(2l);
         Transaction transaction = new Transaction();
         transaction.setAmount(20.0);
+        transaction.setBaseAccount(baseAccount);
+        transaction.setReceivingAccount(receivingAccount);
+        TransactionDTO dto = TransactionMapper.INSTANCE.toTransactionDTO(transaction);
         //when
         when(transactionTypeRepository.findById(3l))
                 .thenReturn(Optional.of(new TransactionType(3l, "transfer")));
@@ -170,7 +184,7 @@ public class TransactionServiceTest {
                 .thenReturn(Optional.of(receivingAccount));
         when(transactionRepository.findById(anyLong()))
                 .thenReturn(Optional.of(transaction));
-        underTest.createTransferTransaction(3l, transaction, 1l, 2l);
+        underTest.createTransferTransaction(3l, dto, 1l, 2l);
         //then
         assertThat(transactionRepository.findById(anyLong()).get()
                 .getBaseAccount().getBalance()).isEqualTo(20.0);

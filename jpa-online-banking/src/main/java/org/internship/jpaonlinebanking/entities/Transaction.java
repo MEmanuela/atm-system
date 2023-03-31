@@ -39,7 +39,7 @@ public class Transaction {
     @JoinColumn(name = "recvAccId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Account receivingAccount;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TransactionType transactionType;

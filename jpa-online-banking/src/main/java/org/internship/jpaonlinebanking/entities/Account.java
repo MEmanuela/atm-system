@@ -30,11 +30,11 @@ public class Account {
     private Date dateOpened;
     @Column(name = "balance")
     private Double balance;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private AccountType accountType;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;

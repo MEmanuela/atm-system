@@ -1,5 +1,6 @@
 package org.internship.jpaonlinebanking;
 
+import org.internship.jpaonlinebanking.dtos.AccountDTO;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.AccountType;
 import org.internship.jpaonlinebanking.entities.Role;
@@ -41,21 +42,18 @@ public class AccountServiceTest {
         User user = new User();
         user.setName("John Doe");
 
-        Account account = new Account();
-        account.setName("John Doe");
-        account.setDateOpened(new Date(2019-12-12));
         //when
         when(accountTypeRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new AccountType(1l, "basic")));
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        underTest.createAccount(1l, account, 1l);
+        underTest.createAccount(1l, 1l);
         //then
         ArgumentCaptor<Account> accountArgumentCaptor =
                 ArgumentCaptor.forClass(Account.class);
         verify(accountRepository).save(accountArgumentCaptor.capture());
         Account capturedAccount = accountArgumentCaptor.getValue();
-        assertThat(capturedAccount).isEqualTo(account);
+        assertThat(capturedAccount.getName()).isEqualTo("ACC_1_basic_0");
     }
     @Test
     void createdAccountHasInitialBalanceZero() {
@@ -63,20 +61,19 @@ public class AccountServiceTest {
         User user = new User();
         user.setName("John Doe");
 
-        Account account = new Account();
-        account.setName("John Doe");
-        account.setDateOpened(new Date(2019-12-12));
         //when
         when(accountTypeRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new AccountType(1l, "basic")));
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        when(accountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(account));
-        underTest.createAccount(1l, account, 1l);
+        underTest.createAccount(1l, 1l);
         //then
-        assertThat(accountRepository.findById(anyLong()).get()
-                .getBalance().equals(0.0));
+        ArgumentCaptor<Account> accountArgumentCaptor =
+                ArgumentCaptor.forClass(Account.class);
+        verify(accountRepository).save(accountArgumentCaptor.capture());
+        Account capturedAccount = accountArgumentCaptor.getValue();
+        //then
+        assertThat(capturedAccount.getBalance()).isEqualTo(0.0);
     }
     @Test
     void canGetAccountsByUser() {

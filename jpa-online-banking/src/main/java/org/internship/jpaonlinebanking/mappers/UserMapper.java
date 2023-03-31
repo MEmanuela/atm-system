@@ -2,25 +2,22 @@ package org.internship.jpaonlinebanking.mappers;
 
 import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
-import java.util.function.Function;
+import java.util.List;
 
-public class UserMapper {
-    public UserDTO toDto(User entity) {
-        UserDTO dto = new UserDTO();
-        dto.setName(entity.getName());
-        dto.setPhone(entity.getPhone());
-        dto.setEmail(entity.getEmail());
-        dto.setPersonalCodeNumber(entity.getPersonalCodeNumber());
-        return dto;
-    }
-
-    public User toEntity(UserDTO dto) {
-        User entity = new User();
-        entity.setName(dto.getName());
-        entity.setPhone(dto.getPhone());
-        entity.setEmail(dto.getEmail());
-        entity.setPersonalCodeNumber(dto.getPersonalCodeNumber());
-        return entity;
-    }
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR,
+        uses = {RoleMapper.class})
+public interface UserMapper {
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    User fromUserDTO(UserDTO dto);
+    UserDTO toUserDTO(User user);
+    List<User> fromListOfUserDTOs(List<UserDTO> dtos);
+    List<UserDTO> toListOfUserDTOs(List<User> users);
 }

@@ -8,6 +8,6 @@ public class UserPersonalCodeNrValidator implements ConstraintValidator<ValidPer
     @Override
     public boolean isValid(String pcnField, ConstraintValidatorContext context) {
         return pcnField != null && pcnField.matches("[0-9]+")
-                && (pcnField.length() == 13);
+                && pcnField.length() == 13;
     }
 }

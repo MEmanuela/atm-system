@@ -8,6 +8,6 @@ public class UserPhoneValidator implements ConstraintValidator<ValidPhoneNr, Str
     @Override
     public boolean isValid(String phoneField, ConstraintValidatorContext context) {
         return phoneField != null && phoneField.matches("[0-9]+")
-                && (phoneField.length() > 8) && (phoneField.length() < 14);
+                && phoneField.length() > 8 && phoneField.length() < 14;
     }
 }

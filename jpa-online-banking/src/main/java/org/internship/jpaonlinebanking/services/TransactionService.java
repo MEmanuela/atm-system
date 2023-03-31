@@ -1,10 +1,16 @@
 package org.internship.jpaonlinebanking.services;
 
+import lombok.AllArgsConstructor;
+import org.internship.jpaonlinebanking.dtos.TransactionDTO;
+import org.internship.jpaonlinebanking.dtos.TransactionTypeDTO;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.TransactionType;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
 import org.internship.jpaonlinebanking.exceptions.TransactionException;
+import org.internship.jpaonlinebanking.mappers.AccountMapper;
+import org.internship.jpaonlinebanking.mappers.TransactionMapper;
+import org.internship.jpaonlinebanking.mappers.TransactionTypeMapper;
 import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionTypeRepository;
@@ -19,58 +25,55 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class TransactionService {
     @Autowired
-    TransactionRepository transactionRepository;
+    private TransactionRepository transactionRepository;
     @Autowired
-    TransactionTypeRepository transactionTypeRepository;
+    private TransactionTypeRepository transactionTypeRepository;
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
-    public TransactionService(TransactionTypeRepository transactionTypeRepository, TransactionRepository transactionRepository, AccountRepository accountRepository) {
-        this.transactionTypeRepository = transactionTypeRepository;
-        this.transactionRepository = transactionRepository;
-        this.accountRepository = accountRepository;
+    public List<TransactionDTO> getAllTransactions() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return TransactionMapper
+                .INSTANCE.toListOfTransactionDTOs(transactions);
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
-    }
-
-    public Transaction getTransactionById(Long transactionId) {
+    public TransactionDTO getTransactionById(Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);
         if (!transaction.isPresent()) {
             throw new ResourceNotFoundException("Transaction with id " + transactionId + "not found");
         }
-        return transaction.get();
+        return TransactionMapper.INSTANCE.toTransactionDTO(transaction.get());
     }
-    public List<Transaction> getTransactionsByType(Long typeId) {
-        return transactionRepository.findByTransactionType_Id(typeId);
-    }
-
-    public List<Transaction> getTransactionsByAccount(Long accountId) {
-        return transactionRepository.findByBaseAccount_AccountId(accountId);
+    public List<TransactionDTO> getTransactionsByType(Long typeId) {
+        List<Transaction> transactions = transactionRepository.findByTransactionType_Id(typeId);
+        return TransactionMapper.INSTANCE.toListOfTransactionDTOs(transactions);
     }
 
-    public List<TransactionType> getTypes() {
-        return transactionTypeRepository.findAll();
+    public List<TransactionDTO> getTransactionsByAccount(Long accountId) {
+        List<Transaction> transactions = transactionRepository.findByBaseAccount_AccountId(accountId);
+        return TransactionMapper.INSTANCE.toListOfTransactionDTOs(transactions);
     }
 
-    public List<List<Transaction>> getTransactionsByUser(Long userId) {
+    public List<TransactionTypeDTO> getTypes() {
+        List<TransactionType> transactionTypes = transactionTypeRepository.findAll();
+        return TransactionTypeMapper.INSTANCE
+                .toListOfTransactionTypeDTOs(transactionTypes);
+    }
+
+    public List<List<TransactionDTO>> getTransactionsByUser(Long userId) {
         List<List<Transaction>> transactions = new ArrayList<>();
         List<Account> userAccounts = accountRepository.findByUser_UserId(userId);
         for (Account account:userAccounts) {
             transactions.add(transactionRepository.findByBaseAccount_AccountId(account.getAccountId()));
         }
-        return transactions;
+        return TransactionMapper.INSTANCE.toListOfListsOfTransactionDTOs(transactions);
     }
 
     @Transactional
-    public Transaction createBasicTransaction(Long typeId, Transaction transaction, Long accountId) {
-//        List<Transaction> transactions = new ArrayList<Transaction>();
-//        TransactionType type1 = new TransactionType();
-//        Account account1 = new Account();
-
+    public void createBasicTransaction(Long typeId, TransactionDTO transactionDTO, Long accountId) {
         Optional<TransactionType> byId = transactionTypeRepository.findById(typeId);
         Optional<Account> forAccount = accountRepository.findById(accountId);
         if (!byId.isPresent()) {
@@ -80,6 +83,8 @@ public class TransactionService {
         }
         TransactionType type = byId.get();
         Account account = forAccount.get();
+
+        Transaction transaction = TransactionMapper.INSTANCE.fromTransactionDTO(transactionDTO);
 
         // tie Transaction Type to Transaction
         transaction.setTransactionType(type);
@@ -98,25 +103,11 @@ public class TransactionService {
             //deposit
             transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() + amount);
         }
-
-        Transaction storedTransaction = transactionRepository.save(transaction);
-
-        // tie Transaction to TransactionType
-        // tie Transaction to Account
-//        transactions.add(transaction1);
-
-        //type1.setTransactions(transactions);
-        //account1.setBaseAccountTransactions(transactions);
-
-        return storedTransaction;
+        transactionRepository.save(transaction);
     }
     @Transactional
-    public Transaction createTransferTransaction(Long typeId, Transaction transaction,
+    public void createTransferTransaction(Long typeId, TransactionDTO transactionDTO,
                                                  Long baseAccountId, Long receivingAccountId) {
-//        List<Transaction> transactions = new ArrayList<Transaction>();
-//        TransactionType type1 = new TransactionType();
-//        Account account1 = new Account();
-
         Optional<TransactionType> byId = transactionTypeRepository.findById(typeId);
         Optional<Account> forBaseAccount = accountRepository.findById(baseAccountId);
         Optional<Account> forReceivingAccount = accountRepository.findById(receivingAccountId);
@@ -130,6 +121,8 @@ public class TransactionService {
         TransactionType type = byId.get();
         Account baseAccount = forBaseAccount.get();
         Account receivingAccount = forReceivingAccount.get();
+
+        Transaction transaction = TransactionMapper.INSTANCE.fromTransactionDTO(transactionDTO);
 
         // tie Transaction Type to Transaction
         transaction.setTransactionType(type);
@@ -148,16 +141,6 @@ public class TransactionService {
         if (transaction.getBaseAccount().getBalance() < 0.0) {
             throw new TransactionException("Not enough money to transfer");
         }
-        Transaction storedTransaction = transactionRepository.save(transaction);
-
-        // tie Transaction to TransactionType
-        // tie Transaction to Account
-//        transactions.add(transaction1);
-
-        //type1.setTransactions(transactions);
-        //account1.setBaseAccountTransactions(transactions);
-        //account1.setReceivingAccountTransactions(transactions);
-
-        return storedTransaction;
+        transactionRepository.save(transaction);
     }
 }
