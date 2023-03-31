@@ -24,8 +24,8 @@ public class AccountType {
 //    @OneToMany(mappedBy = "accountId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Account> accounts = new ArrayList<Account>();
 
-    public AccountType(long id, String type) {
-        this.id = id;
-        this.type = type;
-    }
+//    public AccountType(long id, String type) {
+//        this.id = id;
+//        this.type = type;
+//    }
 }

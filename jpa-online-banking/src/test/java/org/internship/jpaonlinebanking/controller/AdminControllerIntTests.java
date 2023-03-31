@@ -1,6 +1,10 @@
 package org.internship.jpaonlinebanking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.internship.jpaonlinebanking.dtos.AccountDTO;
+import org.internship.jpaonlinebanking.dtos.AccountTypeDTO;
+import org.internship.jpaonlinebanking.dtos.RoleDTO;
+import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
@@ -66,75 +70,60 @@ public class AdminControllerIntTests {
     }
     @Test
     void getAllUsersReturnsOkWithToken() throws Exception {
-//        AuthenticationRequest request = new AuthenticationRequest("criss_evans","something");
-//        String token = authenticationService.authenticate(request).getToken();
         mockMvc.perform(get("/admin/api/v1/getAllUsers")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
     @Test
     void createUserReturnsTheUser() throws Exception {
-        User user = new User();
-        user.setName("Scarlet Brandy");
-        user.setPhone("0956695231");
-        user.setEmail("scarlet.brandy@gmail.com");
-        user.setPersonalCodeNumber("9539486851785");
-        user.setRole(new Role(2l, "customer"));
+        UserDTO dto = new UserDTO();
+        dto.setName("Scarlet Brandy");
+        dto.setPhone("0956695231");
+        dto.setEmail("scarlet.brandy@gmail.com");
+        dto.setPersonalCodeNumber("9539496451785");
+
         Long uId = Long.valueOf(userService.getAllUsers().size());
 
-        String json = objectMapper.writeValueAsString(user);
-//        AuthenticationRequest request = new AuthenticationRequest("criss_evans","something");
-//        String token = authenticationService.authenticate(request).getToken();
+        String json = objectMapper.writeValueAsString(dto);
         mockMvc.perform(post("/admin/api/v1/{roleId}/user", 2)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        assertThat(userService.getUserById(uId).get().equals(user));
+                .andExpect(status().isCreated());
+        assertThat(userService.getUserById(uId).equals(dto));
     }
     @Test
     void createAccountReturnsTheAccount() throws Exception {
-        Account account = new Account();
-        account.setName("New Account");
-        account.setDateOpened(new Date(2019-12-12));
         Long aId = Long.valueOf(accountService.getAllAccounts().size());
 
-        String json = objectMapper.writeValueAsString(account);
-
-//        AuthenticationRequest request = new AuthenticationRequest("criss_evans","something");
-//        String token = authenticationService.authenticate(request).getToken();
         mockMvc.perform(post("/admin/api/v1/{userId}/{typeId}/account", 3, 1)
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        assertThat(accountService.getAccountById(aId).equals(account));
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated());
+        assertThat(accountService.getAccountById(aId).getBalance().equals(0.0));
+        assertThat(accountService.getAccountById(aId).getName().equals("ACC_3_basic_2"));
     }
     @Test
     void testDeleteUser() throws Exception {
-        User user = new User();
-        user.setName("Leila Dixon");
-        user.setPhone("0956695231");
-        user.setEmail("leila.dixon@gmail.com");
-        user.setPersonalCodeNumber("9539486851785");
-        user.setRole(new Role(2l, "customer"));
-        userService.createUser(2l, user);
+        UserDTO dto = new UserDTO();
+        dto.setName("Leila Dixon");
+        dto.setPhone("0956695231");
+        dto.setEmail("leila.dixon@gmail.com");
+        dto.setPersonalCodeNumber("9539486341785");
+
+        userService.createUser(2l, dto);
         Long uId = Long.valueOf(userService.getAllUsers().size());
-//        AuthenticationRequest request = new AuthenticationRequest("criss_evans","something");
-//        String token = authenticationService.authenticate(request).getToken();
+
         mockMvc.perform(delete("/admin/api/v1/user/{userId}", uId)
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
         assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(uId));
     }
     @Test
     void testDeleteAccount() throws Exception {
-        Account account = new Account();
-        account.setName("Account");
-        accountService.createAccount(1l, account, 3l);
-//        AuthenticationRequest request = new AuthenticationRequest("criss_evans","something");
-//        String token = authenticationService.authenticate(request).getToken();
-        mockMvc.perform(delete("/admin/api/v1/account/{accountName}", "Account")
+        accountService.createAccount(1l, 3l);
+
+        mockMvc.perform(delete("/admin/api/v1/account/{accountName}", "ACC_3_basic_2")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
-        assertThrows(ResourceNotFoundException.class, () -> accountService.getAccountByName("Account"));
+                .andExpect(status().isNoContent());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.getAccountByName("ACC_3_basic_2"));
     }
 }

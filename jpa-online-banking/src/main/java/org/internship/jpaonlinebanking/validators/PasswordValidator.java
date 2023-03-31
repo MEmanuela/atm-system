@@ -1,17 +1,11 @@
-package org.internship.jpaonlinebanking.annotations;
+package org.internship.jpaonlinebanking.validators;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.passay.*;
 
-import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {

@@ -8,8 +8,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -138,6 +138,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataAccessException.class)
     public final ResponseEntity<Object> handleDataAccessException(DataAccessException ex,
                                                                   HttpServletRequest request) {
+        String error = ex.getMessage();
+        return buildResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN, error));
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public final ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex,
+                                                                    HttpServletRequest request) {
         String error = ex.getMessage();
         return buildResponseEntity(new ErrorResponse(HttpStatus.FORBIDDEN, error));
     }

@@ -2,19 +2,19 @@ package org.internship.jpaonlinebanking.services;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.internship.jpaonlinebanking.dtos.RoleDTO;
+import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
 import org.internship.jpaonlinebanking.exceptions.UniqueConstraintException;
+import org.internship.jpaonlinebanking.mappers.RoleMapper;
+import org.internship.jpaonlinebanking.mappers.UserMapper;
 import org.internship.jpaonlinebanking.repositories.RoleRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -26,9 +26,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -39,23 +39,28 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDTO> userDTOList = UserMapper.INSTANCE.toListOfUserDTOs(users);
+        return userDTOList;
     }
-    public Optional<User> getUserById(Long userId) {
-        if (!userRepository.existsById(userId)) {
+
+    public UserDTO getUserById(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (!user.isPresent()) {
             throw new ResourceNotFoundException("User with id " + userId + " not found");
         }
-        return userRepository.findById(userId);
+        return UserMapper.INSTANCE.toUserDTO(user.get());
     }
+
     public String generateDefaultUsername(String name) {
-        int cnt = 0;
-        if (userRepository.findByName(name).size() > 0) {
-            cnt = userRepository.findByName(name).size();
+        int cnt = userRepository.countByName(name);
+        if (cnt > 0) {
             return name.toLowerCase().replace(" ", "_").concat(String.valueOf(cnt));
         }
         return name.toLowerCase().replace(" ", "_");
     }
+
     public String generateDefaultPassword(String n, String pcn) {
         String name = n.substring(0, 1).toUpperCase() +
                 n.substring(1).toLowerCase().replace(" ", "");
@@ -63,36 +68,29 @@ public class UserService {
                 + pcn.substring(pcn.length()/2-1, pcn.length()/2 + 2)
                 + name.substring(0, 3) + "#";
     }
+
     @Transactional
-    public User createUser(Long roleId, User user) {
-        List<User> users = new ArrayList<User>();
-        Role role1 = new Role();
-        
+    public void createUser(Long roleId, UserDTO userDTO) {
         Optional<Role> byId = roleRepository.findById(roleId);
         if (!byId.isPresent()) {
             throw new ResourceNotFoundException("Role with id " + roleId + " does not exist");
         }
         Role role = byId.get();
-        if (userRepository.existsByPersonalCodeNumber(user.getPersonalCodeNumber())) {
+        if (userRepository.existsByPersonalCodeNumber(userDTO.getPersonalCodeNumber())) {
             throw new UniqueConstraintException("A user with the specified pcn already exists");
         }
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new UniqueConstraintException("A user with the specified email address exists");
         }
         // tie Role to User
+        String username = generateDefaultUsername(userDTO.getName());
+        String password = generateDefaultPassword(userDTO.getName(), userDTO.getPersonalCodeNumber());
+
+        User user = UserMapper.INSTANCE.fromUserDTO(userDTO);
         user.setRole(role);
-        String username = generateDefaultUsername(user.getName());
-        String password = generateDefaultPassword(user.getName(), user.getPersonalCodeNumber());
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-
-        User user1 = userRepository.save(user);
-
-        // tie User to Role
-        users.add(user1);
-        //role1.setUsers(users);
-
-        return user1;
+        userRepository.save(user);
     }
 
     public void updateUserPassword(Long userId, String password) {
@@ -100,9 +98,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
+
     public void deleteUserById(Long userId) {
         userRepository.deleteById(userId);
     }
+
     public List<User> getUsersByRole(Long roleId) {
         return userRepository.findByRole_RoleId(roleId);
     }

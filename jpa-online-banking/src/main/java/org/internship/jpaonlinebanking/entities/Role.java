@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 @Jacksonized
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Role {
     @Column(name = "ID", nullable = false, length = 5)
@@ -25,8 +26,8 @@ public class Role {
     private String type;
 //    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<User> users = new ArrayList<User>();
-    public Role(Long roleId, String type) {
-        this.roleId = roleId;
-        this.type = type;
-    }
+//    public Role(Long roleId, String type) {
+//        this.roleId = roleId;
+//        this.type = type;
+//    }
 }

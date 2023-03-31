@@ -1,7 +1,9 @@
 package org.internship.jpaonlinebanking.controllers;
 
 import jakarta.validation.Valid;
-import org.internship.jpaonlinebanking.config.JwtService;
+import org.internship.jpaonlinebanking.dtos.AccountDTO;
+import org.internship.jpaonlinebanking.dtos.TransactionDTO;
+import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.Transaction;
 import org.internship.jpaonlinebanking.entities.User;
@@ -12,14 +14,18 @@ import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.TransactionService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v${api-version}")
 public class CustomerController {
     @Autowired
     UserService userService;
@@ -28,70 +34,50 @@ public class CustomerController {
     @Autowired
     TransactionService transactionService;
     @GetMapping("/user/{userId}")
-    public Optional<User> getUserById(@PathVariable(value = "userId") Long userId,
-                                      @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to see user's details");
-        }
-        return userService.getUserById(userId);
+    @PreAuthorize("#userId == principal.userId")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable(value = "userId") Long userId) {
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
     @GetMapping("/accounts/{userId}")
-    public List<Account> getAccountsByUser(@PathVariable(value = "userId") Long userId,
-                                           @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to see user's accounts");
-        }
-        return accountService.getAccountsByUser(userId);
+    @PreAuthorize("#userId == principal.userId")
+    public ResponseEntity<List<AccountDTO>> getAccountsByUser(@PathVariable(value = "userId") Long userId) {
+        return new ResponseEntity<>(accountService.getAccountsByUser(userId), HttpStatus.OK);
     }
     @GetMapping("/transactionHistory/{userId}")
-    public List<List<Transaction>> getTransactionsByUser(@PathVariable(value = "userId") Long userId,
-                                                         @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to see user's transaction history");
-        }
-        return transactionService.getTransactionsByUser(userId);
+    @PreAuthorize("#userId == principal.userId")
+    public ResponseEntity<List<List<TransactionDTO>>> getTransactionsByUser(@PathVariable(value = "userId") Long userId) {
+        return new ResponseEntity<>(transactionService.getTransactionsByUser(userId), HttpStatus.OK);
     }
-    @PostMapping("/{userId}/{typeId}/{accountId}/withdraw")
-    public Transaction createWithdrawTransaction(@PathVariable(value = "userId") Long userId,
-                                                 @PathVariable(value = "typeId") Long typeId,
+    @PostMapping("/{typeId}/{accountId}/withdraw")
+    @PreAuthorize("@restrictAccessService.hasAccount(principal.userId, #accountId)")
+    public ResponseEntity createWithdrawTransaction(@PathVariable(value = "typeId") Long typeId,
                                                  @PathVariable(value = "accountId") Long accountId,
-                                                 @Valid @RequestBody Transaction transaction,
-                                                 @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to perform this transaction");
-        }
-        return transactionService.createBasicTransaction(typeId, transaction, accountId);
+                                                 @Valid @RequestBody TransactionDTO transactionDTO) {
+        transactionService.createBasicTransaction(typeId, transactionDTO, accountId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
-    @PostMapping("/{userId}/{typeId}/{accountId}/deposit")
-    public Transaction createDepositTransaction(@PathVariable(value = "userId") Long userId,
-                                                @PathVariable(value = "typeId") Long typeId,
+    @PostMapping("/{typeId}/{accountId}/deposit")
+    @PreAuthorize("@restrictAccessService.hasAccount(principal.userId, #accountId)")
+    public ResponseEntity createDepositTransaction(@PathVariable(value = "typeId") Long typeId,
                                                 @PathVariable(value = "accountId") Long accountId,
-                                                @Valid @RequestBody Transaction transaction,
-                                                @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to perform this transaction");
-        }
-        return transactionService.createBasicTransaction(typeId, transaction, accountId);
+                                                @Valid @RequestBody TransactionDTO transactionDTO) {
+        transactionService.createBasicTransaction(typeId, transactionDTO, accountId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
-    @PostMapping("/{userId}/{typeId}/{baseAccId}/{recAccId}/transferTransaction")
-    public Transaction createTransferTransaction(@PathVariable(value = "userId") Long userId,
-                                                 @PathVariable(value = "typeId") Long typeId,
+    @PostMapping("/{typeId}/{baseAccId}/{recAccId}/transferTransaction")
+    @PreAuthorize("@restrictAccessService.hasAccount(principal.userId, #baseAccId)")
+    public ResponseEntity createTransferTransaction(@PathVariable(value = "typeId") Long typeId,
                                                  @PathVariable(value = "baseAccId") Long baseAccId,
                                                  @PathVariable(value = "recAccId") Long recAccId,
-                                                 @Valid @RequestBody Transaction transaction,
-                                                 @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to perform this transaction");
-        }
-        return transactionService.createTransferTransaction(typeId, transaction, baseAccId, recAccId);
+                                                 @Valid @RequestBody TransactionDTO transactionDTO) {
+        transactionService.createTransferTransaction(typeId, transactionDTO, baseAccId, recAccId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @PutMapping("/{userId}/password")
-    public void updatePassword(@PathVariable(value = "userId") Long userId,
-                               @Valid @RequestBody PasswordUpdateRequest request,
-                               @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to change user's password");
-        }
+    @PreAuthorize("#userId == principal.userId")
+    public ResponseEntity updatePassword(@PathVariable(value = "userId") Long userId,
+                               @Valid @RequestBody PasswordUpdateRequest request) {
         userService.updateUserPassword(userId, request.getPassword());
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

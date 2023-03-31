@@ -39,20 +39,20 @@ public class Transaction {
     @JoinColumn(name = "recvAccId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Account receivingAccount;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TransactionType transactionType;
 
-    public TransactionType getTransactionType() {
-        return transactionType;
-    }
-    public Account getBaseAccount() {
-        return baseAccount;
-    }
-    public Account getReceivingAccount() {
-        return receivingAccount;
-    }
+//    public TransactionType getTransactionType() {
+//        return transactionType;
+//    }
+//    public Account getBaseAccount() {
+//        return baseAccount;
+//    }
+//    public Account getReceivingAccount() {
+//        return receivingAccount;
+//    }
     @JsonIgnore
     public void setBaseAccount(Account baseAccount) {
         this.baseAccount = baseAccount;

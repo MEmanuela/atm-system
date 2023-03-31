@@ -1,10 +1,14 @@
 package org.internship.jpaonlinebanking.services;
 
 import lombok.AllArgsConstructor;
+import org.internship.jpaonlinebanking.dtos.AccountDTO;
+import org.internship.jpaonlinebanking.dtos.UserDTO;
 import org.internship.jpaonlinebanking.entities.Account;
 import org.internship.jpaonlinebanking.entities.AccountType;
 import org.internship.jpaonlinebanking.entities.User;
 import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
+import org.internship.jpaonlinebanking.mappers.AccountMapper;
+import org.internship.jpaonlinebanking.mappers.UserMapper;
 import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.AccountTypeRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
@@ -23,20 +27,18 @@ public class AccountService {
     AccountTypeRepository accountTypeRepository;
     @Autowired
     UserRepository userRepository;
-    private Long countUsersAccounts(Long userId) {
-        List<Account> accounts = accountRepository.findByUser_UserId(userId);
-        return Long.valueOf(accounts.size());
+
+    private short countUsersAccounts(Long userId) {
+        return accountRepository.countByUser_UserId(userId);
     }
+
     private String generateAccountName(Long userId, String type) {
-        Long accId = countUsersAccounts(userId);
+        short accId = countUsersAccounts(userId);
         return "ACC_" + userId + "_" + type + "_" + accId;
     }
-    @Transactional
-    public Account createAccount(Long typeId, Account account, Long userId) {
-        List<Account> accounts = new ArrayList<Account>();
-        AccountType type1 = new AccountType();
-        User user1 = new User();
 
+    @Transactional
+    public void createAccount(Long typeId, Long userId) {
         Optional<AccountType> byId = accountTypeRepository.findById(typeId);
         Optional<User> forUser = userRepository.findById(userId);
         if (!byId.isPresent()) {
@@ -47,6 +49,8 @@ public class AccountService {
         AccountType type = byId.get();
         User user = forUser.get();
 
+        Account account = new Account();
+
         // tie Account Type to Account
         account.setAccountType(type);
         // tie User to Account
@@ -55,44 +59,37 @@ public class AccountService {
         account.setDateOpened(new Date());
         account.setName(generateAccountName(userId, type.getType()));
 
-        Account account1 = accountRepository.save(account);
-
-        // tie Account to Account Type
-        // tie Account to User
-        accounts.add(account1);
-
-//        type1.setAccounts(accounts);
-//        user1.setAccounts(accounts);
-
-        return account1;
+        accountRepository.save(account);
     }
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+
+    public List<AccountDTO> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+        return AccountMapper.INSTANCE.toListOfAccountDTOs(accounts);
     }
-    public List<Account> getAccountsByUser(Long userId) {
-        return accountRepository.findByUser_UserId(userId);
+
+    public List<AccountDTO> getAccountsByUser(Long userId) {
+        List<Account> accounts = accountRepository.findByUser_UserId(userId);
+        return AccountMapper.INSTANCE.toListOfAccountDTOs(accounts);
     }
-    public Optional<Account> getAccountById(Long accountId) {
-        if (!accountRepository.existsById(accountId)) {
+
+    public AccountDTO getAccountById(Long accountId) {
+        Optional<Account> account = accountRepository.findById(accountId);
+        if (!account.isPresent()) {
             throw new ResourceNotFoundException("Account with id " + accountId + " not found");
         }
-        return accountRepository.findById(accountId);
+        return AccountMapper.INSTANCE.toAccountDTO(account.get());
     }
-    public Optional<Account> getAccountByName(String name) {
+
+    public AccountDTO getAccountByName(String name) {
         Optional<Account> account = accountRepository.findByName(name);
         if (!account.isPresent()) {
             throw new ResourceNotFoundException("Account with that name doesn't exist");
         }
-        return accountRepository.findByName(name);
+        return AccountMapper.INSTANCE.toAccountDTO(account.get());
     }
-    public void deleteAccountById(Long accountId) {
-        accountRepository.deleteById(accountId);
-    }
+
     @Transactional
     public void deleteAccountByName(String name) {
         accountRepository.deleteByName(name);
-    }
-    public static int getRandomInteger(int maximum, int minimum){
-        return ((int) (Math.random()*(maximum - minimum))) + minimum;
     }
 }
