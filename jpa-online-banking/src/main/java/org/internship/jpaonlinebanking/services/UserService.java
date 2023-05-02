@@ -13,6 +13,7 @@ import org.internship.jpaonlinebanking.mappers.UserMapper;
 import org.internship.jpaonlinebanking.repositories.RoleRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ public class UserService {
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MessageSource messageSource;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -48,7 +51,7 @@ public class UserService {
     public UserDTO getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (!user.isPresent()) {
-            throw new ResourceNotFoundException("User with id " + userId + " not found");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchUser", null, Locale.ENGLISH));
         }
         return UserMapper.INSTANCE.toUserDTO(user.get());
     }
@@ -73,14 +76,14 @@ public class UserService {
     public void createUser(Long roleId, UserDTO userDTO) {
         Optional<Role> byId = roleRepository.findById(roleId);
         if (!byId.isPresent()) {
-            throw new ResourceNotFoundException("Role with id " + roleId + " does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchRole", null, Locale.ENGLISH));
         }
         Role role = byId.get();
         if (userRepository.existsByPersonalCodeNumber(userDTO.getPersonalCodeNumber())) {
-            throw new UniqueConstraintException("A user with the specified pcn already exists");
+            throw new UniqueConstraintException(messageSource.getMessage("exception.uniqueConstraint.pcn", null, Locale.ENGLISH));
         }
         if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new UniqueConstraintException("A user with the specified email address exists");
+            throw new UniqueConstraintException(messageSource.getMessage("exception.uniqueConstraint.email", null, Locale.ENGLISH));
         }
         // tie Role to User
         String username = generateDefaultUsername(userDTO.getName());

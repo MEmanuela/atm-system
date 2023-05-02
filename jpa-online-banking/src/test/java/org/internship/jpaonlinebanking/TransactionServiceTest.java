@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,10 +37,12 @@ public class TransactionServiceTest {
     private TransactionTypeRepository transactionTypeRepository;
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private MessageSource messageSource;
     private TransactionService underTest;
     @BeforeEach
     void setUp() {
-        underTest = new TransactionService(transactionRepository, transactionTypeRepository, accountRepository);
+        underTest = new TransactionService(transactionRepository, transactionTypeRepository, accountRepository, messageSource);
     }
     @Test
     void canGetAllTransactions() {

@@ -4,6 +4,8 @@ import jakarta.persistence.RollbackException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -23,10 +25,13 @@ import org.springframework.validation.FieldError;
 import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @Autowired
+    private MessageSource messageSource;
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex,
                                                                         HttpServletRequest request) {
@@ -38,15 +43,6 @@ public class GlobalExceptionHandler {
                                                                    HttpServletRequest request) {
         String error = ex.getMessage();
         return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
-    }
-    @ExceptionHandler(AuthorizationException.class)
-    public final ResponseEntity<Object> handleAuthorizationException(AuthorizationException ex,
-                                                                      HttpServletRequest request) {
-        String error = ex.getMessage();
-        ErrorResponse response = new ErrorResponse(HttpStatus.UNAUTHORIZED);
-        response.setMessage(error);
-
-        return buildResponseEntity(response);
     }
     @ExceptionHandler(UserAuthenticationException.class)
     public final ResponseEntity<Object> handleUserAuthenticationException(UserAuthenticationException ex,
@@ -75,7 +71,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public final ResponseEntity<Object> handleArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
                                                                       HttpServletRequest request) {
-        String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
+        String error = ex.getName() + " " +
+                messageSource.getMessage("exception.argumentType", null, Locale.ENGLISH) +
+                " " + ex.getRequiredType().getName();
         return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -88,7 +86,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public final ResponseEntity<Object> handleMissingParameterException(MissingServletRequestParameterException ex,
                                                                         HttpServletRequest request) {
-        String error = ex.getParameterName() + " parameter is missing";
+        String error = ex.getParameterName() + " " +
+                messageSource.getMessage("exception.missingParameter", null, Locale.ENGLISH);
         return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
     }
     @ExceptionHandler(ConstraintViolationException.class)
@@ -112,27 +111,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public final ResponseEntity<Object> handleEmptyResultException(EmptyResultDataAccessException ex,
                                                         HttpServletRequest request) {
-        String error = "The specified entity does not exists";
+        String error = messageSource.getMessage("exception.resourceNotFound", null, Locale.ENGLISH);
         return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error));
     }
     @ExceptionHandler(NoHandlerFoundException.class)
     public final ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
                                                                       HttpServletRequest request) {
-        String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
+        String error = messageSource.getMessage("exception.noHandlerFound", null, Locale.ENGLISH)
+                + " " + ex.getHttpMethod() + " " + ex.getRequestURL();
         return buildResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND, error));
     }
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public final ResponseEntity<Object> handleHttpMethodNotSupportedException(HttpRequestMethodNotSupportedException ex,
                                                                              HttpServletRequest request) {
-        String error = ex.getMethod() + " method is not supported for this request. Supported methods are " +
-                ex.getSupportedHttpMethods();
+        String error = ex.getMethod() + " " +
+                messageSource.getMessage("exception.methodNotSupported", null, Locale.ENGLISH)
+                + " " + ex.getSupportedHttpMethods();
         return buildResponseEntity(new ErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, error));
     }
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public final ResponseEntity<Object> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex,
                                                                                  HttpServletRequest request) {
-        String error = ex.getContentType() + " media type is not supported. Supported media types are " +
-                ex.getSupportedMediaTypes();
+        String error = ex.getContentType() + " " +
+                messageSource.getMessage("exception.mediaTypeNotSupported", null, Locale.ENGLISH)
+                + " " + ex.getSupportedMediaTypes();
         return buildResponseEntity(new ErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, error));
     }
     @ExceptionHandler(DataAccessException.class)
@@ -149,7 +151,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, HttpServletRequest request) {
-        String error = ex.getMessage();
+        String error = messageSource.getMessage("exception.unexpected", null, Locale.ENGLISH);
         return buildResponseEntity(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, error));
     }
     private ResponseEntity<Object> buildResponseEntity(ErrorResponse errorResponse) {

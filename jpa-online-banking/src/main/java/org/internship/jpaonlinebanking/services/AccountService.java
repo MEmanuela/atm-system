@@ -13,6 +13,7 @@ import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.AccountTypeRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class AccountService {
     AccountTypeRepository accountTypeRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private MessageSource messageSource;
 
     private short countUsersAccounts(Long userId) {
         return accountRepository.countByUser_UserId(userId);
@@ -42,9 +45,9 @@ public class AccountService {
         Optional<AccountType> byId = accountTypeRepository.findById(typeId);
         Optional<User> forUser = userRepository.findById(userId);
         if (!byId.isPresent()) {
-            throw new ResourceNotFoundException("Account type with id " + typeId + "does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchType", null, Locale.ENGLISH));
         } else if (!forUser.isPresent()) {
-            throw new ResourceNotFoundException("User with id " + userId + "does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchUser", null, Locale.ENGLISH));
         }
         AccountType type = byId.get();
         User user = forUser.get();
@@ -75,7 +78,7 @@ public class AccountService {
     public AccountDTO getAccountById(Long accountId) {
         Optional<Account> account = accountRepository.findById(accountId);
         if (!account.isPresent()) {
-            throw new ResourceNotFoundException("Account with id " + accountId + " not found");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchAccount", null, Locale.ENGLISH));
         }
         return AccountMapper.INSTANCE.toAccountDTO(account.get());
     }
@@ -83,7 +86,7 @@ public class AccountService {
     public AccountDTO getAccountByName(String name) {
         Optional<Account> account = accountRepository.findByName(name);
         if (!account.isPresent()) {
-            throw new ResourceNotFoundException("Account with that name doesn't exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchAccount", null, Locale.ENGLISH));
         }
         return AccountMapper.INSTANCE.toAccountDTO(account.get());
     }

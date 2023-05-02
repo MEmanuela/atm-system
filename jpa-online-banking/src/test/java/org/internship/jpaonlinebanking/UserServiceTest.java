@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,8 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private MessageSource messageSource;
     @Bean
     private PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -36,7 +39,7 @@ public class UserServiceTest {
     private UserMapper mapper;
     @BeforeEach
     void setUp() {
-        underTest = new UserService(userRepository, roleRepository, passwordEncoder());
+        underTest = new UserService(userRepository, roleRepository, passwordEncoder(), messageSource);
     }
     @Test
     void canGetAllUsers() {

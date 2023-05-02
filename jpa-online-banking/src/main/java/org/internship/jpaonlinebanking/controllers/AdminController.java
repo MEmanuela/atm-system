@@ -2,16 +2,14 @@ package org.internship.jpaonlinebanking.controllers;
 
 import jakarta.validation.Valid;
 import org.internship.jpaonlinebanking.dtos.UserDTO;
-import org.internship.jpaonlinebanking.entities.Account;
-import org.internship.jpaonlinebanking.entities.Role;
 import org.internship.jpaonlinebanking.entities.User;
-import org.internship.jpaonlinebanking.exceptions.AuthorizationException;
 import org.internship.jpaonlinebanking.security.PasswordUpdateRequest;
 import org.internship.jpaonlinebanking.services.AccountService;
 import org.internship.jpaonlinebanking.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,12 +56,9 @@ public class AdminController {
     }
 
     @PutMapping("/{userId}/password")
+    @PreAuthorize("#userId == principal.userId")
     public ResponseEntity updatePassword(@PathVariable(value = "userId") Long userId,
-                               @Valid @RequestBody PasswordUpdateRequest request,
-                               @AuthenticationPrincipal User user) {
-        if (user.getUserId() != userId) {
-            throw new AuthorizationException("You are not authorized to change user's password");
-        }
+                               @Valid @RequestBody PasswordUpdateRequest request) {
         userService.updateUserPassword(userId, request.getPassword());
         return new ResponseEntity(HttpStatus.OK);
     }

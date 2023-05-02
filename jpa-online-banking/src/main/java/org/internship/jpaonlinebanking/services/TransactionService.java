@@ -15,14 +15,12 @@ import org.internship.jpaonlinebanking.repositories.AccountRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionRepository;
 import org.internship.jpaonlinebanking.repositories.TransactionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +31,8 @@ public class TransactionService {
     private TransactionTypeRepository transactionTypeRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private MessageSource messageSource;
 
     public List<TransactionDTO> getAllTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
@@ -43,7 +43,7 @@ public class TransactionService {
     public TransactionDTO getTransactionById(Long transactionId) {
         Optional<Transaction> transaction = transactionRepository.findById(transactionId);
         if (!transaction.isPresent()) {
-            throw new ResourceNotFoundException("Transaction with id " + transactionId + "not found");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound", null, Locale.ENGLISH));
         }
         return TransactionMapper.INSTANCE.toTransactionDTO(transaction.get());
     }
@@ -77,9 +77,9 @@ public class TransactionService {
         Optional<TransactionType> byId = transactionTypeRepository.findById(typeId);
         Optional<Account> forAccount = accountRepository.findById(accountId);
         if (!byId.isPresent()) {
-            throw new ResourceNotFoundException("Transaction type with id " + typeId + "does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchType", null, Locale.ENGLISH));
         } else if (!forAccount.isPresent()) {
-            throw new ResourceNotFoundException("Account with id " + accountId + "does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchAccount", null, Locale.ENGLISH));
         }
         TransactionType type = byId.get();
         Account account = forAccount.get();
@@ -97,7 +97,7 @@ public class TransactionService {
             //withdraw
             transaction.getBaseAccount().setBalance(transaction.getBaseAccount().getBalance() - amount);
             if (transaction.getBaseAccount().getBalance() < 0.0) {
-                throw new TransactionException("Not enough money to withdraw");
+                throw new TransactionException(messageSource.getMessage("exception.transactionNotPossible", null, Locale.ENGLISH));
             }
         } else if (type.getType().equals("deposit")){
             //deposit
@@ -112,11 +112,9 @@ public class TransactionService {
         Optional<Account> forBaseAccount = accountRepository.findById(baseAccountId);
         Optional<Account> forReceivingAccount = accountRepository.findById(receivingAccountId);
         if (!byId.isPresent()) {
-            throw new ResourceNotFoundException("Transaction type with id " + typeId + "does not exist");
-        } else if (!forBaseAccount.isPresent()) {
-            throw new ResourceNotFoundException("Base account with id " + baseAccountId + "does not exist");
-        } else if (!forReceivingAccount.isPresent()) {
-            throw new ResourceNotFoundException("Receiving account with id " + receivingAccountId + "does not exist");
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchType", null, Locale.ENGLISH));
+        } else if (!forBaseAccount.isPresent() || !forReceivingAccount.isPresent()) {
+            throw new ResourceNotFoundException(messageSource.getMessage("exception.resourceNotFound.noSuchAccount", null, Locale.ENGLISH));
         }
         TransactionType type = byId.get();
         Account baseAccount = forBaseAccount.get();
@@ -139,7 +137,7 @@ public class TransactionService {
         transaction.getReceivingAccount().setBalance(transaction.getReceivingAccount().getBalance() + amount);
 
         if (transaction.getBaseAccount().getBalance() < 0.0) {
-            throw new TransactionException("Not enough money to transfer");
+            throw new TransactionException(messageSource.getMessage("exception.transactionNotPossible", null, Locale.ENGLISH));
         }
         transactionRepository.save(transaction);
     }

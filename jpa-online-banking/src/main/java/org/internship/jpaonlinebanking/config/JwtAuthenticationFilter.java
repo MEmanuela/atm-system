@@ -11,6 +11,7 @@ import org.internship.jpaonlinebanking.exceptions.ErrorResponse;
 import org.internship.jpaonlinebanking.exceptions.UserAuthenticationException;
 import org.internship.jpaonlinebanking.repositories.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenRepository tokenRepository;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private MessageSource messageSource;
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -59,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
-                    throw new UserAuthenticationException("Invalid token!");
+                    throw new UserAuthenticationException(messageSource.getMessage("exception.invalidToken", null, Locale.ENGLISH));
                 }
             }
             filterChain.doFilter(request, response);

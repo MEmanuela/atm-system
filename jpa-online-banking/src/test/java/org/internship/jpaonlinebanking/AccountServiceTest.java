@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
 import java.util.Date;
 import java.util.List;
@@ -31,10 +32,12 @@ public class AccountServiceTest {
     private UserRepository userRepository;
     @Mock
     private AccountTypeRepository accountTypeRepository;
+    @Mock
+    private MessageSource messageSource;
     private AccountService underTest;
     @BeforeEach
     void setUp() {
-        underTest = new AccountService(accountRepository, accountTypeRepository, userRepository);
+        underTest = new AccountService(accountRepository, accountTypeRepository, userRepository, messageSource);
     }
     @Test
     void canCreateAccount() {

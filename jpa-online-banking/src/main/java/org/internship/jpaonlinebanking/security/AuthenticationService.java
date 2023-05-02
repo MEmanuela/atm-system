@@ -9,10 +9,13 @@ import org.internship.jpaonlinebanking.exceptions.ResourceNotFoundException;
 import org.internship.jpaonlinebanking.exceptions.UserAuthenticationException;
 import org.internship.jpaonlinebanking.repositories.TokenRepository;
 import org.internship.jpaonlinebanking.repositories.UserRepository;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +25,13 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private MessageSource messageSource;
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
                 .name(request.getName())
-                .phone("0000000000")
-                .email(request.getName() + "@gmail.com")
-                .personalCodeNumber("0000000000000")
+                .phone("0862214587")
+                .email(request.getName().toLowerCase().replace(" ", ".") + "@gmail.com")
+                .personalCodeNumber("9648212578966")
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(new Role(Long.valueOf(1), "admin"))
@@ -52,7 +56,7 @@ public class AuthenticationService {
         if (response.getToken() != null) {
             return response;
         } else {
-            throw new UserAuthenticationException("Something went wrong.Failed to authenticate!");
+            throw new UserAuthenticationException(messageSource.getMessage("exception.authenticationError", null, Locale.ENGLISH));
         }
     }
     private void saveUserToken(User user, String jwtToken) {
